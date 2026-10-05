@@ -1,0 +1,5 @@
+{
+  "fake": 0,
+  "genuine": 1,
+  "output": "probability_of_genuine"
+}

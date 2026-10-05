@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">True Shot AI</string>
+    <string name="tagline">AI-संचालित स्क्रीनशॉट सत्यापन</string>
+
+    <!-- Common -->
+    <string name="back">‹</string>
+    <string name="chevron">›</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_home">होम</string>
+    <string name="nav_scan">स्कैन</string>
+    <string name="nav_history">इतिहास</string>
+    <string name="nav_profile">प्रोफ़ाइल</string>
+
+    <!-- Home -->
+    <string name="welcome_back">वापसी पर स्वागत है</string>
+    <string name="user">उपयोगकर्ता</string>
+    <string name="profile">प्रोफ़ाइल</string>
+    <string name="fraud_caught_this_month">इस महीने पकड़ी गई धोखाधड़ी</string>
+    <string name="across_flagged_screenshots">%d संदिग्ध स्क्रीनशॉट</string>
+    <string name="quick_actions">त्वरित कार्रवाइयाँ</string>
+    <string name="scan_screenshot">स्क्रीनशॉट स्कैन करें</string>
+    <string name="view_history">इतिहास देखें</string>
+    <string name="upload_screenshot">स्क्रीनशॉट अपलोड करें</string>
+    <string name="open_camera">कैमरा खोलें</string>
+    <string name="recent_scans">हाल के स्कैन</string>
+
+    <!-- Scan -->
+    <string name="upload_image">इमेज अपलोड करें</string>
+    <string name="gallery">गैलरी</string>
+    <string name="camera">कैमरा</string>
+    <string name="analyze">स्क्रीनशॉट का विश्लेषण करें</string>
+    <string name="analyzing">विश्लेषण किया जा रहा है…</string>
+    <string name="step_ocr">टेक्स्ट पढ़ा जा रहा है (OCR)</string>
+    <string name="step_ela">पिक्सेल बदलाव की जाँच की जा रही है (ELA)</string>
+    <string name="step_metadata">मेटाडेटा की जाँच की जा रही है</string>
+    <string name="step_ai">AI मॉडल चलाया जा रहा है</string>
+    <string name="step_prediction">परिणाम तैयार किया जा रहा है</string>
+
+    <!-- Result -->
+    <string name="prediction">पूर्वानुमान</string>
+    <string name="confidence">विश्वास स्तर</string>
+    <string name="reasons">कारण</string>
+    <string name="download_report">PDF रिपोर्ट डाउनलोड करें</string>
+    <string name="share_report">रिपोर्ट साझा करें</string>
+    <string name="verdict_fake">नकली</string>
+    <string name="verdict_genuine">वास्तविक</string>
+    <string name="verdict_suspicious">संदिग्ध</string>
+
+    <!-- PDF Preview -->
+    <string name="pdf_preview">PDF पूर्वावलोकन</string>
+    <string name="download_pdf">PDF डाउनलोड करें</string>
+
+    <!-- History -->
+    <string name="search_hint">लेन-देन ID या UPI ID से खोजें</string>
+    <string name="filter_all">सभी</string>
+    <string name="filter_fake">नकली</string>
+    <string name="filter_real">वास्तविक</string>
+
+    <!-- Profile -->
+    <string name="shop_name">दुकान का नाम</string>
+    <string name="language">भाषा</string>
+    <string name="notifications">सूचनाएँ</string>
+    <string name="dark_mode">डार्क मोड</string>
+    <string name="help">मदद</string>
+    <string name="about">हमारे बारे में</string>
+    <string name="exit">बाहर निकलें</string>
+    <string name="about_text">True Shot AI, OCR, पिक्सेल बदलाव विश्लेषण और CNN मॉडल का उपयोग करके नकली UPI भुगतान स्क्रीनशॉट का पता लगाता है। यह एक अंतिम वर्ष की शैक्षणिक परियोजना के रूप में बनाया गया है।</string>
+
+    <!-- Profile Main Screen -->
+    <string name="manage_your_account">अपने True Shot AI खाते को प्रबंधित करें</string>
+    <string name="account">खाता</string>
+    <string name="edit_profile">प्रोफ़ाइल संपादित करें</string>
+    <string name="privacy_security">गोपनीयता और सुरक्षा</string>
+    <string name="help_support">मदद और सहायता</string>
+    <string name="log_out">लॉग आउट</string>
+    <string name="trueproof_user">True Shot AI उपयोगकर्ता</string>
+    <string name="no_email_available">ईमेल उपलब्ध नहीं है</string>
+
+    <!-- Edit Profile -->
+    <string name="profile_photo">प्रोफ़ाइल फ़ोटो</string>
+    <string name="change_photo">फ़ोटो बदलें</string>
+    <string name="full_name">पूरा नाम</string>
+    <string name="enter_your_full_name">अपना पूरा नाम दर्ज करें</string>
+    <string name="email">ईमेल</string>
+    <string name="enter_your_email">अपना ईमेल दर्ज करें</string>
+    <string name="phone_number">फ़ोन नंबर</string>
+    <string name="optional">वैकल्पिक</string>
+    <string name="save_changes">परिवर्तन सहेजें</string>
+
+    <!-- About -->
+    <string name="about_app">ऐप के बारे में</string>
+    <string name="app_logo">True Shot AI ऐप लोगो</string>
+    <string name="version_1_0_0">संस्करण 1.0.0</string>
+    <string name="terms_of_service">सेवा की शर्तें</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
+
+    <!-- Terms of Service -->
+    <string name="terms_intro">True Shot AI ऐप का उपयोग करके, आप नीचे दी गई सेवा की शर्तों को स्वीकार करते हैं।</string>
+
+    <string name="terms_using_title">ऐप का उपयोग</string>
+    <string name="terms_using_text">इस ऐप का उपयोग केवल कानूनी उद्देश्यों के लिए किया जाना चाहिए। सेवा का दुरुपयोग न करें और इसका उपयोग दूसरों को नुकसान पहुँचाने के उद्देश्य से न करें।</string>
+
+    <string name="terms_content_title">आपकी सामग्री</string>
+    <string name="terms_content_text">आपके द्वारा स्कैन की गई फ़ोटो और स्क्रीनशॉट का स्वामित्व आपके पास ही रहता है। इनका उपयोग केवल आपको स्कैन परिणाम प्रदान करने के आवश्यक उद्देश्य से किया जाता है।</string>
+
+    <string name="terms_changes_title">शर्तों में बदलाव</string>
+    <string name="terms_changes_text">हम आवश्यकता के अनुसार इन सेवा शर्तों को अपडेट कर सकते हैं। महत्वपूर्ण बदलाव होने पर आपको ऐप के माध्यम से सूचित किया जाएगा।</string>
+
+    <!-- Privacy Policy -->
+    <string name="privacy_intro">यह गोपनीयता नीति बताती है कि हम आपकी व्यक्तिगत जानकारी और आपके द्वारा स्कैन की गई सामग्री को कैसे संभालते हैं।</string>
+
+    <string name="privacy_collect_title">हम कौन-सी जानकारी एकत्र करते हैं</string>
+    <string name="privacy_collect_text">सेवा प्रदान करने के लिए आपका नाम, ईमेल पता और आपके द्वारा स्कैन की गई फ़ोटो या स्क्रीनशॉट जैसी जानकारी एकत्र की जा सकती है।</string>
+
+    <string name="privacy_use_title">हम जानकारी का उपयोग कैसे करते हैं</string>
+    <string name="privacy_use_text">इस जानकारी का उपयोग आपके स्कैन परिणाम दिखाने, आपके स्कैन इतिहास को प्रबंधित करने और ऐप की सेवाएँ प्रदान करने के लिए किया जाता है। हम आपकी व्यक्तिगत जानकारी बेचते नहीं हैं।</string>
+
+    <string name="privacy_choices_title">आपके विकल्प</string>
+    <string name="privacy_choices_text">आप अपना स्कैन इतिहास साफ़ कर सकते हैं या गोपनीयता और सुरक्षा सेटिंग्स से अपना खाता कभी भी हटा सकते हैं।</string>
+
+    <!-- Help & Support -->
+    <string name="common_questions">सामान्य प्रश्न</string>
+
+    <string name="faq_how_scan">मैं स्कैन कैसे करूँ?</string>
+    <string name="faq_how_scan_answer">स्कैन टैब खोलें, कैमरे से फोटो लें या गैलरी से फोटो चुनें। कुछ सेकंड में परिणाम दिखाई देगा।</string>
+
+    <string name="faq_scan_fail">मेरा स्कैन क्यों विफल हुआ?</string>
+    <string name="faq_scan_fail_answer">सुनिश्चित करें कि फोटो साफ और अच्छी रोशनी में है। आपका इंटरनेट कनेक्शन भी चालू होना चाहिए। फिर दोबारा प्रयास करें।</string>
+
+    <string name="faq_old_scans">मेरे पुराने स्कैन कहाँ हैं?</string>
+    <string name="faq_old_scans_answer">हर स्कैन History में सेव होता है। उसे दोबारा देखने के लिए किसी स्कैन पर टैप करें।</string>
+
+    <string name="faq_delete_data">मैं अपना डेटा कैसे हटाऊँ?</string>
+    <string name="faq_delete_data_answer">Profile → Privacy &amp; security पर जाएँ। वहाँ आप अपना स्कैन इतिहास साफ कर सकते हैं या अपना अकाउंट हटा सकते हैं।</string>
+
+    <string name="email_support">ईमेल सहायता</string>
+    <string name="report_problem">समस्या की रिपोर्ट करें</string>
+
+</resources>

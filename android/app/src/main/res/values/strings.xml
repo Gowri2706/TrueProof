@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">True Shot AI</string>
+    <string name="tagline">AI-Powered Screenshot Verification</string>
+
+    <!-- Supabase / Google Sign-In -->
+    <string name="google_web_client_id" translatable="false">931461148519-022l8b0cohbji0dobu85r60h3pdcr9ek.apps.googleusercontent.com</string>
+
+    <!-- Common -->
+    <string name="back">‹</string>
+    <string name="chevron">›</string>
+
+    <!-- Bottom nav -->
+    <string name="nav_home">Home</string>
+    <string name="nav_scan">Scan</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Home -->
+    <string name="welcome_back">Welcome back</string>
+    <string name="user">User</string>
+    <string name="profile">Profile</string>
+    <string name="fraud_caught_this_month">FRAUD CAUGHT THIS MONTH</string>
+    <string name="across_flagged_screenshots">Across %d flagged screenshots</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="scan_screenshot">Scan screenshot</string>
+    <string name="view_history">View history</string>
+    <string name="upload_screenshot">Upload Screenshot</string>
+    <string name="open_camera">Open Camera</string>
+    <string name="recent_scans">Recent Scans</string>
+
+    <!-- Scan -->
+    <string name="upload_image">Upload Image</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+    <string name="analyze">Analyze Screenshot</string>
+    <string name="analyzing">Analyzing…</string>
+    <string name="step_ocr">Reading text (OCR)</string>
+    <string name="step_ela">Checking pixel tampering (ELA)</string>
+    <string name="step_metadata">Checking metadata</string>
+    <string name="step_ai">Running AI model</string>
+    <string name="step_prediction">Preparing result</string>
+
+    <!-- Result -->
+    <string name="prediction">Prediction</string>
+    <string name="confidence">Confidence</string>
+    <string name="reasons">Reasons</string>
+    <string name="download_report">Download PDF Report</string>
+    <string name="share_report">Share Report</string>
+    <string name="verdict_fake">FAKE</string>
+    <string name="verdict_genuine">GENUINE</string>
+    <string name="verdict_suspicious">SUSPICIOUS</string>
+
+    <!-- PDF Preview -->
+    <string name="pdf_preview">PDF Preview</string>
+    <string name="download_pdf">Download PDF</string>
+
+    <!-- History -->
+    <string name="search_hint">Search by transaction ID or UPI ID</string>
+    <string name="filter_all">All</string>
+    <string name="filter_fake">Fake</string>
+    <string name="filter_real">Genuine</string>
+
+    <!-- Profile -->
+    <string name="shop_name">Shop Name</string>
+    <string name="language">Language</string>
+    <string name="notifications">Notifications</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+    <string name="exit">Exit</string>
+    <string name="about_text">True Shot AI detects fake UPI payment screenshots using OCR, pixel analysis, and a CNN model. It was built as a final-year academic project.</string>
+
+    <!-- Profile Main Screen -->
+    <string name="manage_your_account">Manage your True Shot AI account</string>
+    <string name="account">Account</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="privacy_security">Privacy &amp; security</string>
+    <string name="help_support">Help &amp; support</string>
+    <string name="log_out">Log out</string>
+    <string name="trueproof_user">True Shot AI User</string>
+    <string name="no_email_available">No email available</string>
+
+    <!-- Edit Profile -->
+    <string name="profile_photo">Profile photo</string>
+    <string name="change_photo">Change photo</string>
+    <string name="full_name">Full name</string>
+    <string name="enter_your_full_name">Enter your full name</string>
+    <string name="email">Email</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="phone_number">Phone number</string>
+    <string name="optional">Optional</string>
+    <string name="save_changes">Save changes</string>
+
+    <!-- About -->
+    <string name="about_app">About the app</string>
+    <string name="app_logo">True Shot AI logo</string>
+    <string name="version_1_0_0">Version 1.0.0</string>
+    <string name="terms_of_service">Terms of service</string>
+    <string name="privacy_policy">Privacy policy</string>
+
+    <!-- Terms of Service -->
+    <string name="terms_intro">By using True Shot AI, you agree to the following terms of service.</string>
+
+    <string name="terms_using_title">Using the app</string>
+    <string name="terms_using_text">You must use this app only for lawful purposes. You must not misuse the service or use it with the intention of causing harm to others.</string>
+
+    <string name="terms_content_title">Your content</string>
+    <string name="terms_content_text">You retain ownership of the photos and screenshots you scan. They are used only for the purposes necessary to provide your scan results.</string>
+
+    <string name="terms_changes_title">Changes to these terms</string>
+    <string name="terms_changes_text">We may update these terms of service when necessary. If important changes are made, you will be notified through the app.</string>
+
+    <!-- Privacy Policy -->
+    <string name="privacy_intro">This privacy policy explains how we handle your personal information and the content you scan using True Shot AI.</string>
+
+    <string name="privacy_collect_title">What we collect</string>
+    <string name="privacy_collect_text">Your name, email address, and photos or screenshots that you scan may be collected when necessary to provide the service.</string>
+
+    <string name="privacy_use_title">How we use your information</string>
+    <string name="privacy_use_text">This information is used to provide your scan results, manage your scan history, and provide the app services. We do not sell your personal information.</string>
+    <string name="privacy_choices_title">Your choices</string>
+    <string name="privacy_choices_text">You can clear your scan history or delete your account at any time from Privacy &amp; security settings.</string>
+
+    <!-- Help & Support -->
+    <string name="common_questions">Common questions</string>
+
+    <string name="faq_how_scan">How do I scan?</string>
+    <string name="faq_how_scan_answer">Open the Scan tab, point your camera or pick a photo from your gallery, and wait a few seconds for the result.</string>
+
+    <string name="faq_scan_fail">Why did my scan fail?</string>
+    <string name="faq_scan_fail_answer">Check that the photo is sharp and well lit, and that your internet connection is on. Then try again.</string>
+
+    <string name="faq_old_scans">Where are my old scans?</string>
+    <string name="faq_old_scans_answer">Every scan is saved in the History tab. Tap one to see it again.</string>
+
+    <string name="faq_delete_data">How do I delete my data?</string>
+    <string name="faq_delete_data_answer">Go to Profile → Privacy &amp; security. You can clear your history or delete your account there.</string>
+
+    <string name="email_support">Email support</string>
+    <string name="report_problem">Report a problem</string>
+
+</resources>

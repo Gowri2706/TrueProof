@@ -1,0 +1,45 @@
+# Android / Gradle
+.gradle/
+build/
+*/build/
+local.properties
+
+# Android Studio
+.idea/
+*.iml
+
+# Generated Android release files
+android/app/release/
+
+# Python
+python_ai/venv/
+__pycache__/
+*.pyc
+
+# Python AI large files
+python_ai/test_images/
+python_ai/dataset/
+python_ai/models/
+
+# Python AI model backups
+python_ai/backup_custom_cnn/
+
+# Python AI generated model files
+python_ai/model/*.keras
+python_ai/model/*.h5
+python_ai/model/*.tflite
+
+# Python AI generated test / audit files
+python_ai/model/wrong_fake_check/
+python_ai/model/*_history.png
+python_ai/model/*_loss.png
+python_ai/model/*_results.json
+python_ai/model/*_report.txt
+python_ai/manual_test/
+
+# Release signing key
+*.jks
+*.keystore
+
+# Generated APK
+*.apk

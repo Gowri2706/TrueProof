@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="primary">#1F3A34</color>
+    <color name="primary_dark">#152722</color>
+    <color name="primary_light">#EADFB8</color>
+
+    <color name="bg">#F4F0E6</color>
+    <color name="card">#FBF9F2</color>
+
+    <color name="text">#22302A</color>
+    <color name="text_dim">#5B685F</color>
+
+    <color name="verified">#3E7A5E</color>
+    <color name="suspicious">#C9A227</color>
+    <color name="fake">#B5473A</color>
+
+    <color name="white">#FFFFFF</color>
+
+    <color name="forest">#1F3A34</color>
+    <color name="forest_dark">#152722</color>
+    <color name="sage">#3E7A5E</color>
+
+    <color name="gold">#C9A227</color>
+    <color name="gold_soft">#EADFB8</color>
+
+    <color name="terracotta">#B5473A</color>
+
+    <color name="cream">#F4F0E6</color>
+    <color name="cream_card">#FBF9F2</color>
+
+    <color name="line">#E4DEC9</color>
+
+    <!-- Language screen border -->
+    <color name="border">#E4DEC9</color>
+
+</resources>

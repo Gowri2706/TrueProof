@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <application
+        android:name=".TrueProofApplication"
+        android:allowBackup="true"
+        android:label="True Shot AI"
+        android:icon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TrueProof">
+
+        <!-- About -->
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false" />
+
+        <!-- Terms of Service -->
+        <activity
+            android:name=".TermsActivity"
+            android:exported="false" />
+
+        <!-- Privacy Policy -->
+        <activity
+            android:name=".PrivacyActivity"
+            android:exported="false" />
+
+        <!-- Login screen is the app launcher -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <!-- OTP verification screen -->
+        <activity
+            android:name=".OtpActivity"
+            android:exported="false" />
+
+        <!-- Main app screen -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Screenshot scan screen -->
+        <activity
+            android:name=".ScanActivity"
+            android:exported="false" />
+
+        <!-- AI analyzing screen -->
+        <activity
+            android:name=".AnalyzingActivity"
+            android:exported="false" />
+
+        <!-- Result screen -->
+        <activity
+            android:name=".ResultActivity"
+            android:exported="false" />
+
+        <!-- PDF preview screen -->
+        <activity
+            android:name=".PdfPreviewActivity"
+            android:exported="false" />
+
+        <!-- History screen -->
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false" />
+
+        <!-- Profile screen -->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
+        <!-- Edit Profile screen -->
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+
+        <!-- Language screen -->
+        <activity
+            android:name=".LanguageActivity"
+            android:exported="false" />
+
+        <!-- Help & Support screen -->
+        <activity
+            android:name=".HelpSupportActivity"
+            android:exported="false" />
+
+        <!-- FileProvider for PDF sharing -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+
+        </provider>
+
+    </application>
+
+</manifest>

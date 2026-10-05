@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg"
+    android:paddingStart="48dp"
+    android:paddingEnd="48dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="32dp">
+
+    <!-- TOP BACK BUTTON + TITLE -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnAnalyzingBack"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:background="@drawable/bg_analyzing_back"
+            android:gravity="center"
+            android:text="←"
+            android:textColor="@color/text"
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Analyzing screenshot"
+            android:textColor="@color/text"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+    <!-- ANALYZING GRAPHIC -->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <!-- OUTER RING -->
+
+        <ProgressBar
+            android:id="@+id/analyzingProgress"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/primary"
+            android:scaleX="1.0"
+            android:scaleY="1.0" />
+
+        <!-- INNER CIRCLE -->
+
+        <View
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_analyzing_inner" />
+
+        <!-- SMALL CENTER DOT -->
+
+        <View
+            android:id="@+id/analyzingDot"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_analyzing_dot" />
+
+    </FrameLayout>
+
+
+    <!-- STATUS TEXT -->
+
+    <TextView
+        android:id="@+id/tvAnalyzingTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Analyzing screenshot..."
+        android:textColor="@color/text"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        android:fontFamily="serif" />
+
+    <TextView
+        android:id="@+id/tvAnalyzingSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="This usually takes a couple of seconds"
+        android:textColor="@color/text_dim"
+        android:textSize="14sp" />
+
+
+    <!-- ANALYSIS STEPS -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:orientation="vertical">
+
+        <!-- STEP 1 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/stepDot1"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/bg_step_active" />
+
+            <TextView
+                android:id="@+id/tvStep1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Reading image"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+
+        <!-- STEP 2 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/stepDot2"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/bg_step_active" />
+
+            <TextView
+                android:id="@+id/tvStep2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Checking layout structure"
+                android:textColor="@color/text"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+
+        <!-- STEP 3 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/stepDot3"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/bg_step_inactive" />
+
+            <TextView
+                android:id="@+id/tvStep3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Running on-device AI model"
+                android:textColor="@color/text_dim"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+
+        <!-- STEP 4 -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/stepDot4"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/bg_step_inactive" />
+
+            <TextView
+                android:id="@+id/tvStep4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Preparing result"
+                android:textColor="@color/text_dim"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

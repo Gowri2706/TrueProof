@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TrueProof — Light Mode App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#3557FF; --primary-dark:#213BCC; --primary-light:#EAEFFF;
+  --bg:#F4F6FC; --card:#FFFFFF;
+  --text:#14162B; --text-dim:#8A8FA3; --text-dimmer:#B7BBCB;
+  --line:#EEF0F7;
+  --verified:#1FAA59; --verified-light:#E6F9EF;
+  --suspicious:#F0A020; --suspicious-light:#FFF3E0;
+  --fake:#EF4B4B; --fake-light:#FDEAEA;
+  --purple:#7C5CFC; --purple-light:#F1EDFF;
+  --teal:#17B3A3; --teal-light:#E4FBF8;
+  --shadow: 0 10px 26px rgba(53,87,255,0.10);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:#0A0B0F; font-family:'Inter',sans-serif; color:var(--text);
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:30px;
+}
+.mono{font-family:'JetBrains Mono',monospace;}
+.poppins{font-family:'Poppins',sans-serif;}
+
+.phone{
+  width:375px; height:812px; background:var(--bg); border-radius:44px;
+  border:10px solid #000; box-shadow:0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px #222;
+  position:relative; overflow:hidden; flex-shrink:0;
+}
+.notch{position:absolute; top:0; left:50%; transform:translateX(-50%); width:130px; height:26px; background:#000; border-radius:0 0 16px 16px; z-index:50;}
+.statusbar{height:46px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 22px 8px; font-size:12px; font-weight:600; color:var(--text);}
+.screen-area{height:calc(100% - 46px - 78px); overflow-y:auto; position:relative;}
+.screen-area::-webkit-scrollbar{display:none;}
+
+.tabbar{
+  position:absolute; bottom:0; left:0; right:0; height:78px;
+  background:var(--card); border-top:1px solid var(--line);
+  display:flex; padding-bottom:18px; z-index:40;
+  box-shadow:0 -6px 18px rgba(0,0,0,0.04);
+}
+.tab{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer;}
+.tab-icon{font-size:19px; color:var(--text-dimmer);}
+.tab-label{font-size:9.5px; color:var(--text-dimmer); font-weight:700;}
+.tab.active .tab-icon, .tab.active .tab-label{color:var(--primary);}
+.tab.active .tab-icon{transform:translateY(-1px);}
+
+.screen{display:none; padding:18px 20px 30px; animation:fadeIn .3s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+
+.appbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.appbar-title{font-family:'Poppins',sans-serif; font-size:19px; font-weight:700;}
+.icon-btn{width:36px; height:36px; border-radius:12px; background:var(--card); box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer;}
+
+/* LOGIN */
+.login-screen{padding:60px 26px; text-align:center; height:100%; display:flex; flex-direction:column; justify-content:center; background:linear-gradient(180deg, var(--primary-light), var(--bg) 40%);}
+.login-mark{width:62px; height:62px; border-radius:18px; background:linear-gradient(135deg, var(--primary), var(--primary-dark)); display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-weight:800; font-size:26px; color:#fff; margin:0 auto 18px; box-shadow:0 10px 24px rgba(53,87,255,0.35);}
+.login-title{font-family:'Poppins',sans-serif; font-size:23px; font-weight:700; margin-bottom:8px;}
+.login-tag{font-size:12.5px; color:var(--text-dim); line-height:1.6; margin-bottom:28px;}
+.field{margin-bottom:14px; text-align:left;}
+.field label{font-size:11px; color:var(--text-dim); display:block; margin-bottom:6px; font-weight:600;}
+.field input{width:100%; background:#fff; border:1.5px solid var(--line); border-radius:13px; padding:14px; color:var(--text); font-size:14px; outline:none;}
+.field input:focus{border-color:var(--primary);}
+.btn{border:none; border-radius:13px; padding:15px; font-size:14px; font-weight:700; cursor:pointer; width:100%; font-family:'Inter',sans-serif;}
+.btn-primary{background:var(--primary); color:#fff; box-shadow:0 10px 20px rgba(53,87,255,0.30);}
+.btn-ghost{background:#fff; color:var(--text); border:1.5px solid var(--line);}
+.login-foot{margin-top:20px; font-size:12px; color:var(--text-dimmer);}
+.login-foot a{color:var(--primary); font-weight:600;}
+
+/* HOME */
+.balance-card{
+  background:linear-gradient(135deg, var(--primary), #5A78FF 60%, var(--primary-dark));
+  border-radius:22px; padding:22px; margin-bottom:20px; color:#fff; position:relative; overflow:hidden;
+  box-shadow:0 14px 30px rgba(53,87,255,0.30);
+}
+.balance-card::after{content:''; position:absolute; right:-40px; top:-40px; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,0.08);}
+.bc-label{font-size:11px; opacity:0.8; margin-bottom:6px; font-weight:600;}
+.bc-verdict-row{display:flex; justify-content:space-between; align-items:flex-end;}
+.bc-num{font-family:'Poppins',sans-serif; font-size:30px; font-weight:800;}
+.bc-sub{font-size:11px; opacity:0.85; margin-top:4px;}
+.bc-pill{background:rgba(255,255,255,0.18); border-radius:20px; padding:6px 12px; font-size:11px; font-weight:700; display:flex; align-items:center; gap:5px;}
+
+.quick-row{display:flex; justify-content:space-between; margin-bottom:22px;}
+.qa{display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;}
+.qa-ic{width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:19px; box-shadow:var(--shadow);}
+.qa-label{font-size:10.5px; font-weight:600; color:var(--text-dim);}
+
+.section-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.section-label{font-size:13.5px; font-weight:700; font-family:'Poppins',sans-serif;}
+.see-all{font-size:11px; color:var(--primary); font-weight:700;}
+
+.case-card{display:flex; align-items:center; gap:12px; padding:13px; background:var(--card); border-radius:16px; margin-bottom:10px; box-shadow:var(--shadow); cursor:pointer;}
+.case-ic{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;}
+.case-ic.fake{background:var(--fake-light); color:var(--fake);}
+.case-ic.genuine{background:var(--verified-light); color:var(--verified);}
+.case-ic.suspicious{background:var(--suspicious-light); color:var(--suspicious);}
+.case-info{flex:1; min-width:0;}
+.case-info .t{font-size:12.5px; font-weight:700;}
+.case-info .s{font-size:10.5px; color:var(--text-dimmer); margin-top:1px;}
+.badge{padding:4px 10px; border-radius:20px; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.3px;}
+.badge.genuine{background:var(--verified-light); color:var(--verified);}
+.badge.suspicious{background:var(--suspicious-light); color:var(--suspicious);}
+.badge.fake{background:var(--fake-light); color:var(--fake);}
+
+/* UPLOAD/SCAN */
+.upload-card{
+  border:1.5px dashed #C7D0FF; border-radius:20px; padding:36px 20px; text-align:center;
+  margin-bottom:20px; background:var(--primary-light);
+}
+.upload-card .ic{font-size:28px; margin-bottom:10px;}
+.upload-card .t{font-family:'Poppins',sans-serif; font-size:15px; font-weight:700; margin-bottom:4px;}
+.upload-card .s{font-size:11px; color:var(--text-dim);}
+
+.scan-preview-card{background:var(--card); border-radius:20px; padding:16px; margin-bottom:18px; box-shadow:var(--shadow); position:relative; overflow:hidden;}
+.fake-ss{background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; color:#1a1a1a;}
+.fake-ss .ab{display:flex; justify-content:space-between; font-size:9.5px; color:#888; margin-bottom:12px;}
+.fake-ss .ok{text-align:center; font-size:10px; color:var(--verified); font-weight:700; margin-bottom:6px;}
+.fake-ss .amt{font-size:24px; font-weight:700; text-align:center; margin-bottom:2px;}
+.fake-ss .to{text-align:center; font-size:10.5px; color:#555; margin-bottom:12px;}
+.fake-ss .row{display:flex; justify-content:space-between; font-size:10px; padding:5px 0; border-bottom:1px solid #eee; color:#444;}
+.sweep{position:absolute; left:16px; right:16px; top:16px; height:3px; background:linear-gradient(90deg, transparent, var(--primary), transparent); box-shadow:0 0 14px 2px rgba(53,87,255,0.5); animation:sweep 2.2s ease-in-out infinite;}
+@keyframes sweep{0%{top:16px;} 50%{top:280px;} 100%{top:16px;}}
+
+.step-card{background:var(--card); border-radius:18px; padding:16px; margin-bottom:16px; box-shadow:var(--shadow);}
+.step-row{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line);}
+.step-row:last-child{border-bottom:none;}
+.step-dot{width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0;}
+.step-dot.done{background:var(--verified-light); color:var(--verified);}
+.step-dot.active{background:var(--primary-light); color:var(--primary); animation:pulse 1.1s infinite;}
+.step-dot.pending{background:#F0F1F7; color:var(--text-dimmer);}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.35;}}
+.step-txt{font-size:12.5px; font-weight:600;}
+
+/* RESULT */
+.verdict-card{border-radius:20px; padding:20px; margin-bottom:18px; color:#fff; box-shadow:0 14px 30px rgba(239,75,75,0.30); background:linear-gradient(135deg, var(--fake), #C93636);}
+.verdict-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;}
+.verdict-label{font-size:10px; text-transform:uppercase; letter-spacing:1.2px; opacity:0.85; font-weight:700;}
+.verdict-word{font-family:'Poppins',sans-serif; font-size:24px; font-weight:800;}
+.ring-sm{width:56px; height:56px; position:relative;}
+.ring-sm svg{transform:rotate(-90deg);}
+.ring-sm .rn{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; color:#fff;}
+.verdict-desc{font-size:12px; opacity:0.92; line-height:1.55;}
+
+.detail-card{background:var(--card); border-radius:18px; padding:16px; margin-bottom:14px; box-shadow:var(--shadow);}
+.detail-title{font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; margin-bottom:12px;}
+.d-row{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:12px;}
+.d-row:last-child{border-bottom:none;}
+.d-row .k{color:var(--text-dim);}
+.d-row .v{font-family:'JetBrains Mono',monospace; font-weight:600;}
+.finding-sm{display:flex; gap:9px; padding:10px 0; border-bottom:1px solid var(--line); align-items:flex-start;}
+.finding-sm:last-child{border-bottom:none;}
+.fdot{width:8px; height:8px; border-radius:50%; margin-top:5px; flex-shrink:0;}
+.fdot.high{background:var(--fake);} .fdot.med{background:var(--suspicious);} .fdot.low{background:var(--verified);}
+.ftxt-t{font-size:12.5px; font-weight:700;}
+.ftxt-s{font-size:10.5px; color:var(--text-dim); margin-top:2px; line-height:1.4;}
+
+/* HISTORY search & filter */
+.search-pill{background:var(--card); border-radius:14px; padding:12px 16px; font-size:12.5px; color:var(--text-dimmer); margin-bottom:14px; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px;}
+.filter-row{display:flex; gap:8px; margin-bottom:16px;}
+.chip{padding:8px 14px; border-radius:20px; font-size:11px; font-weight:700; background:var(--card); color:var(--text-dim); box-shadow:var(--shadow);}
+.chip.active{background:var(--primary); color:#fff; box-shadow:0 8px 18px rgba(53,87,255,0.30);}
+
+/* PROFILE */
+.profile-head{text-align:center; padding:16px 0 24px;}
+.profile-avatar{width:74px; height:74px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--primary-dark)); margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-size:24px; font-weight:700; color:#fff; box-shadow:0 10px 22px rgba(53,87,255,0.30);}
+.profile-name{font-family:'Poppins',sans-serif; font-size:17px; font-weight:700;}
+.profile-role{font-size:11.5px; color:var(--text-dimmer); margin-top:2px;}
+.menu-item{display:flex; align-items:center; gap:12px; padding:14px; background:var(--card); border-radius:14px; margin-bottom:9px; font-size:13px; font-weight:600; box-shadow:var(--shadow);}
+.menu-item .mi{font-size:16px; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;}
+.menu-item .arrow{margin-left:auto; color:var(--text-dimmer);}
+
+/* LANGUAGE BUTTONS */
+.lang-btn{font-size:10.5px; font-weight:700; padding:6px 10px; border-radius:10px; background:#F0F1F7; color:var(--text-dim); cursor:pointer;}
+.lang-btn.active{background:var(--primary); color:#fff;}
+
+/* DARK MODE SWITCH */
+.switch{position:relative; display:inline-block; width:40px; height:22px;}
+.switch input{opacity:0; width:0; height:0;}
+.slider{position:absolute; cursor:pointer; inset:0; background:#D8DBE8; border-radius:22px; transition:.2s;}
+.slider::before{content:''; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s;}
+.switch input:checked + .slider{background:var(--primary);}
+.switch input:checked + .slider::before{transform:translateX(18px);}
+
+/* DARK MODE THEME OVERRIDE */
+.phone.dark{
+  --bg:#0F1117; --card:#1A1D27; --text:#F2F3F8; --text-dim:#9198B0; --text-dimmer:#5D6479; --line:#262A38;
+  --primary-light:#1E2440; --verified-light:#122A1E; --suspicious-light:#332412; --fake-light:#331717;
+  --purple-light:#231A3D; --teal-light:#0F2B28;
+}
+.phone.dark .statusbar{color:var(--text);}
+.phone.dark .fake-ss{background:#20232E; color:#EDEEF3; border-color:#2D3140;}
+.phone.dark .fake-ss .to, .phone.dark .fake-ss .row{color:#B5BACB;}
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="statusbar"><span>9:41</span><span>●●●● 5G 🔋</span></div>
+
+  <div class="screen-area">
+
+    <!-- HOME -->
+    <div class="screen active" id="s-home">
+      <div class="appbar">
+        <div><div style="font-size:11px; color:var(--text-dim);">Good evening 👋</div><div class="appbar-title">Gowri Stores</div></div>
+        <div class="icon-btn">🔔</div>
+      </div>
+
+      <div class="balance-card">
+        <div class="bc-label">This month · fraud caught</div>
+        <div class="bc-verdict-row">
+          <div>
+            <div class="bc-num">₹41,200</div>
+            <div class="bc-sub">saved across 97 fake screenshots</div>
+          </div>
+          <div class="bc-pill">🛡 92% accurate</div>
+        </div>
+      </div>
+
+      <div class="quick-row">
+        <div class="qa" onclick="showScreen('s-scan')">
+          <div class="qa-ic" style="background:var(--primary-light); color:var(--primary);">📷</div>
+          <div class="qa-label">Scan</div>
+        </div>
+        <div class="qa" onclick="showScreen('s-history')">
+          <div class="qa-ic" style="background:var(--purple-light); color:var(--purple);">🗂</div>
+          <div class="qa-label">History</div>
+        </div>
+        <div class="qa" onclick="showScreen('s-reports')">
+          <div class="qa-ic" style="background:var(--teal-light); color:var(--teal);">📄</div>
+          <div class="qa-label">Reports</div>
+        </div>
+        <div class="qa" onclick="showScreen('s-alerts')">
+          <div class="qa-ic" style="background:var(--suspicious-light); color:var(--suspicious);">🛎</div>
+          <div class="qa-label">Alerts</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div class="section-label" data-i18n="recent_scans">Recent scans</div>
+        <div class="see-all" onclick="showScreen('s-history')">See all</div>
+      </div>
+
+      <div class="case-card" onclick="showScreen('s-result')">
+        <div class="case-ic fake">⚠</div>
+        <div class="case-info"><div class="t">₹2,450 · srilakshmi@ybl</div><div class="s">Today, 6:14 PM</div></div>
+        <span class="badge fake">Fake</span>
+      </div>
+      <div class="case-card">
+        <div class="case-ic genuine">✓</div>
+        <div class="case-info"><div class="t">₹850 · rajkumar@oksbi</div><div class="s">Today, 4:02 PM</div></div>
+        <span class="badge genuine">Genuine</span>
+      </div>
+      <div class="case-card">
+        <div class="case-ic suspicious">?</div>
+        <div class="case-info"><div class="t">₹6,200 · anitastores@ybl</div><div class="s">Today, 1:47 PM</div></div>
+        <span class="badge suspicious">Suspicious</span>
+      </div>
+    </div>
+
+    <!-- SCAN -->
+    <div class="screen" id="s-scan">
+      <div class="appbar">
+        <div class="icon-btn" onclick="showScreen('s-home')">←</div>
+        <div class="appbar-title" style="font-size:15px;">Analyzing…</div>
+        <div style="width:36px;"></div>
+      </div>
+
+      <div class="scan-preview-card">
+        <div class="fake-ss">
+          <div class="ab"><span>GPay</span><span>9:41</span></div>
+          <div class="ok">✓ Payment successful</div>
+          <div class="amt">₹2,450</div>
+          <div class="to">Paid to Sri Lakshmi Textiles</div>
+          <div class="row"><span>Txn ID</span><span>T26063011...</span></div>
+          <div class="row"><span>Date</span><span>30 Jun, 6:12 PM</span></div>
+          <div class="row"><span>To UPI</span><span>srilakshmi@ybl</span></div>
+        </div>
+        <div class="sweep"></div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-row"><div class="step-dot done">✓</div><div class="step-txt">Text extraction (OCR)</div></div>
+        <div class="step-row"><div class="step-dot done">✓</div><div class="step-txt">Font & layout check</div></div>
+        <div class="step-row"><div class="step-dot active">●</div><div class="step-txt">Pixel & compression analysis</div></div>
+        <div class="step-row"><div class="step-dot pending">○</div><div class="step-txt">Metadata inspection</div></div>
+        <div class="step-row"><div class="step-dot pending">○</div><div class="step-txt">AI classification</div></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="showScreen('s-result')">View report →</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="s-result">
+      <div class="appbar">
+        <div class="icon-btn" onclick="showScreen('s-home')">←</div>
+        <div class="appbar-title" style="font-size:15px;">Case #2026-0347</div>
+        <div class="icon-btn">⬇</div>
+      </div>
+
+      <div class="verdict-card">
+        <div class="verdict-top">
+          <div>
+            <div class="verdict-label">Verdict</div>
+            <div class="verdict-word">Likely Fake</div>
+          </div>
+          <div class="ring-sm">
+            <svg width="56" height="56">
+              <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.25)" stroke-width="6" fill="none"/>
+              <circle cx="28" cy="28" r="24" stroke="#fff" stroke-width="6" fill="none" stroke-dasharray="151" stroke-dashoffset="32" stroke-linecap="round"/>
+            </svg>
+            <div class="rn">79%</div>
+          </div>
+        </div>
+        <div class="verdict-desc">Tamper signals found near the amount & status text. Verify with the customer before accepting.</div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-title">🔤 Extracted details</div>
+        <div class="d-row"><span class="k">Amount</span><span class="v">₹2,450.00</span></div>
+        <div class="d-row"><span class="k">Transaction ID</span><span class="v">T260630114...</span></div>
+        <div class="d-row"><span class="k">Date & time</span><span class="v">30 Jun, 6:12 PM</span></div>
+        <div class="d-row"><span class="k">UPI ID</span><span class="v">srilakshmi@ybl</span></div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-title">🧬 Forensic findings</div>
+        <div class="finding-sm"><div class="fdot high"></div><div><div class="ftxt-t">Font inconsistency near amount</div><div class="ftxt-s">Digits use a different weight than surrounding text.</div></div></div>
+        <div class="finding-sm"><div class="fdot high"></div><div><div class="ftxt-t">Compression mismatch (ELA)</div><div class="ftxt-s">Sharper compression edge around status line.</div></div></div>
+        <div class="finding-sm"><div class="fdot med"></div><div><div class="ftxt-t">Metadata stripped</div><div class="ftxt-s">No EXIF data — consistent with editing.</div></div></div>
+      </div>
+
+      <button class="btn btn-primary" style="margin-bottom:10px;" data-i18n="download_report">⬇ Download PDF report</button>
+      <button class="btn btn-ghost" onclick="showScreen('s-home')">Back to home</button>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="screen" id="s-history">
+      <div class="appbar"><div class="appbar-title">History</div><div class="icon-btn">⚲</div></div>
+      <div class="search-pill">🔍 Search by transaction ID or UPI ID</div>
+      <div class="filter-row">
+        <div class="chip active">All</div>
+        <div class="chip">Genuine</div>
+        <div class="chip">Suspicious</div>
+        <div class="chip">Fake</div>
+      </div>
+      <div class="section-label" style="margin-bottom:12px;">This week</div>
+      <div class="case-card"><div class="case-ic fake">⚠</div><div class="case-info"><div class="t">₹2,450 · srilakshmi@ybl</div><div class="s">Today, 6:14 PM</div></div><span class="badge fake">Fake</span></div>
+      <div class="case-card"><div class="case-ic genuine">✓</div><div class="case-info"><div class="t">₹850 · rajkumar@oksbi</div><div class="s">Today, 4:02 PM</div></div><span class="badge genuine">Genuine</span></div>
+      <div class="case-card"><div class="case-ic suspicious">?</div><div class="case-info"><div class="t">₹6,200 · anitastores@ybl</div><div class="s">Today, 1:47 PM</div></div><span class="badge suspicious">Suspicious</span></div>
+      <div class="case-card"><div class="case-ic genuine">✓</div><div class="case-info"><div class="t">₹1,120 · murugan@okaxis</div><div class="s">Yesterday, 8:30 PM</div></div><span class="badge genuine">Genuine</span></div>
+      <div class="section-label" style="margin:16px 0 12px;">Earlier</div>
+      <div class="case-card"><div class="case-ic fake">⚠</div><div class="case-info"><div class="t">₹3,000 · selvi.textiles@ybl</div><div class="s">28 Jun, 5:15 PM</div></div><span class="badge fake">Fake</span></div>
+      <div class="case-card"><div class="case-ic genuine">✓</div><div class="case-info"><div class="t">₹475 · kumarshop@okhdfcbank</div><div class="s">27 Jun, 11:02 AM</div></div><span class="badge genuine">Genuine</span></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="screen" id="s-reports">
+      <div class="appbar">
+        <div class="icon-btn" onclick="showScreen('s-home')">←</div>
+        <div class="appbar-title" style="font-size:17px;">Reports</div>
+        <div class="icon-btn">⬇</div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-title">📄 Monthly summary — June 2026</div>
+        <div class="d-row"><span class="k">Total scanned</span><span class="v">1,284</span></div>
+        <div class="d-row"><span class="k">Genuine</span><span class="v" style="color:var(--verified)">1,044 (81%)</span></div>
+        <div class="d-row"><span class="k">Suspicious</span><span class="v" style="color:var(--suspicious)">143 (11%)</span></div>
+        <div class="d-row"><span class="k">Fake caught</span><span class="v" style="color:var(--fake)">97 (8%)</span></div>
+        <div class="d-row"><span class="k">Amount saved</span><span class="v">₹41,200</span></div>
+      </div>
+
+      <div class="section-head"><div class="section-label">Download a report</div></div>
+      <div class="case-card"><div class="case-ic" style="background:var(--teal-light); color:var(--teal);">📄</div><div class="case-info"><div class="t">Full case history (PDF)</div><div class="s">All 1,284 scans, June 2026</div></div><span class="see-all" style="color:var(--primary); font-weight:700;">⬇</span></div>
+      <div class="case-card"><div class="case-ic" style="background:var(--fake-light); color:var(--fake);">⚠</div><div class="case-info"><div class="t">Fake transactions only (PDF)</div><div class="s">97 flagged cases</div></div><span class="see-all" style="color:var(--primary); font-weight:700;">⬇</span></div>
+      <div class="case-card"><div class="case-ic" style="background:var(--primary-light); color:var(--primary);">📊</div><div class="case-info"><div class="t">CSV export (for accounting)</div><div class="s">Raw data, spreadsheet-ready</div></div><span class="see-all" style="color:var(--primary); font-weight:700;">⬇</span></div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="screen" id="s-alerts">
+      <div class="appbar">
+        <div class="icon-btn" onclick="showScreen('s-home')">←</div>
+        <div class="appbar-title" style="font-size:17px;">Fraud Alerts</div>
+        <div class="icon-btn">⚙</div>
+      </div>
+
+      <div class="section-label" style="margin-bottom:12px;">Today</div>
+      <div class="case-card"><div class="case-ic fake">⚠</div><div class="case-info"><div class="t">Fake screenshot blocked</div><div class="s">₹2,450 · srilakshmi@ybl · 6:14 PM</div></div><span class="badge fake">79%</span></div>
+      <div class="case-card"><div class="case-ic suspicious">?</div><div class="case-info"><div class="t">Suspicious pattern flagged</div><div class="s">₹6,200 · anitastores@ybl · 1:47 PM</div></div><span class="badge suspicious">61%</span></div>
+
+      <div class="section-label" style="margin:16px 0 12px;">This week</div>
+      <div class="case-card"><div class="case-ic fake">⚠</div><div class="case-info"><div class="t">Repeat sender flagged</div><div class="s">Same UPI ID used in 2 fake attempts</div></div><span class="badge fake">High</span></div>
+      <div class="case-card"><div class="case-ic fake">⚠</div><div class="case-info"><div class="t">Fake screenshot blocked</div><div class="s">₹3,000 · selvi.textiles@ybl · 28 Jun</div></div><span class="badge fake">88%</span></div>
+
+      <div class="detail-card" style="margin-top:16px;">
+        <div class="detail-title">🔔 Alert settings</div>
+        <div class="d-row"><span class="k">Notify on Fake verdict</span><span class="v" style="color:var(--verified);">On</span></div>
+        <div class="d-row"><span class="k">Notify on Suspicious verdict</span><span class="v" style="color:var(--verified);">On</span></div>
+        <div class="d-row"><span class="k">Daily summary</span><span class="v" style="color:var(--text-dimmer);">Off</span></div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="screen" id="s-profile">
+      <div class="profile-head">
+        <div class="profile-avatar">GS</div>
+        <div class="profile-name">Gowri Stores</div>
+        <div class="profile-role">Shop Owner · Vellore</div>
+      </div>
+      <div class="menu-item"><span class="mi" style="background:var(--primary-light); color:var(--primary);">🏪</span> Shop details <span class="arrow">›</span></div>
+      <div class="menu-item" style="cursor:pointer;">
+        <span class="mi" style="background:var(--primary-light); color:var(--primary);">🌐</span>
+        <span data-i18n="language">Language</span>
+        <span class="arrow" style="margin-left:auto; display:flex; gap:6px;">
+          <span class="lang-btn active" data-lang="en" onclick="setLanguage('en', event)">English</span>
+          <span class="lang-btn" data-lang="ta" onclick="setLanguage('ta', event)">தமிழ்</span>
+        </span>
+      </div>
+      <div class="menu-item">
+        <span class="mi" style="background:var(--purple-light); color:var(--purple);">🌙</span>
+        <span data-i18n="dark_mode">Dark Mode</span>
+        <label class="switch" style="margin-left:auto;">
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="menu-item"><span class="mi" style="background:var(--suspicious-light); color:var(--suspicious);">🔔</span> <span data-i18n="notifications">Notifications</span> <span class="arrow">›</span></div>
+      <div class="menu-item"><span class="mi" style="background:var(--teal-light); color:var(--teal);">📊</span> Usage & plan <span class="arrow">›</span></div>
+      <div class="menu-item"><span class="mi" style="background:var(--fake-light); color:var(--fake);">🛡</span> Fraud alerts <span class="arrow">›</span></div>
+      <div class="menu-item"><span class="mi" style="background:var(--purple-light); color:var(--purple);">❓</span> <span data-i18n="help">Help & support</span> <span class="arrow">›</span></div>
+      <div class="menu-item"><span class="mi" style="background:#EAF4FF; color:#3B82F6;">ℹ️</span> <span data-i18n="about">About</span> <span class="arrow">›</span></div>
+      <div class="menu-item"><span class="mi" style="background:#F0F1F7; color:var(--text-dim);">🚪</span> <span data-i18n="exit">Exit</span> <span class="arrow">›</span></div>
+    </div>
+
+  </div>
+
+  <div class="tabbar">
+    <div class="tab active" data-tab="s-home" onclick="showScreen('s-home', this)"><span class="tab-icon">⌂</span><span class="tab-label" data-i18n="nav_home">Home</span></div>
+    <div class="tab" data-tab="s-scan" onclick="showScreen('s-scan', this)"><span class="tab-icon">📷</span><span class="tab-label" data-i18n="nav_scan">Scan</span></div>
+    <div class="tab" data-tab="s-history" onclick="showScreen('s-history', this)"><span class="tab-icon">≡</span><span class="tab-label" data-i18n="nav_history">History</span></div>
+    <div class="tab" data-tab="s-profile" onclick="showScreen('s-profile', this)"><span class="tab-icon">☺</span><span class="tab-label" data-i18n="nav_profile">Profile</span></div>
+  </div>
+</div>
+
+<script>
+function showScreen(id, el){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const tab = document.querySelector('.tab[data-tab="'+id+'"]');
+  if(tab) tab.classList.add('active');
+}
+
+/* ---------------- LANGUAGE (English / Tamil) ---------------- */
+const translations = {
+  en: {
+    nav_home:"Home", nav_scan:"Scan", nav_history:"History", nav_profile:"Profile",
+    recent_scans:"Recent scans", download_report:"⬇ Download PDF report",
+    language:"Language", dark_mode:"Dark Mode", notifications:"Notifications",
+    help:"Help & support", about:"About", exit:"Exit"
+  },
+  ta: {
+    nav_home:"முகப்பு", nav_scan:"ஸ்கேன்", nav_history:"வரலாறு", nav_profile:"சுயவிவரம்",
+    recent_scans:"சமீபத்திய ஸ்கேன்கள்", download_report:"⬇ PDF அறிக்கையை பதிவிறக்கவும்",
+    language:"மொழி", dark_mode:"டார்க் மோட்", notifications:"அறிவிப்புகள்",
+    help:"உதவி", about:"பற்றி", exit:"வெளியேறு"
+  }
+};
+
+function setLanguage(lang, evt){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(translations[lang][key]) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  if(evt) evt.target.classList.add('active');
+  else document.querySelector('.lang-btn[data-lang="'+lang+'"]')?.classList.add('active');
+  appState.lang = lang;
+}
+
+/* ---------------- DARK MODE ---------------- */
+function toggleDarkMode(isOn){
+  document.querySelector('.phone').classList.toggle('dark', isOn);
+  appState.dark = isOn;
+}
+
+/* In-memory state for this session (NOTE: for the real Android app, use
+   SharedPreferences as shown in LocaleHelper.java / ProfileActivity.java —
+   this HTML file is just a clickable UI mockup, not the production app). */
+const appState = { lang: 'en', dark: false };
+
+(function initPrefs(){
+  setLanguage(appState.lang);
+  document.getElementById('darkModeToggle').checked = appState.dark;
+  toggleDarkMode(appState.dark);
+})();
+</script>
+</body>
+</html>
