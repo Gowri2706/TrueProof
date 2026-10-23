@@ -11,13 +11,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:padding="28dp">
+        android:padding="24dp">
 
-        <!-- Logo / App Name -->
+        <!-- App Name -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="30dp"
             android:text="@string/app_name"
             android:textColor="@color/forest"
             android:textSize="32sp"
@@ -32,11 +32,11 @@
             android:textColor="@color/text_dim"
             android:textSize="15sp" />
 
-        <!-- Login Card -->
+        <!-- Authentication Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="28dp"
             app:cardBackgroundColor="@color/card"
             app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
@@ -49,24 +49,29 @@
                 android:orientation="vertical"
                 android:padding="22dp">
 
+                <!-- Mode Title -->
                 <TextView
+                    android:id="@+id/tvModeTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Create your account"
                     android:textColor="@color/text"
-                    android:textSize="22sp"
+                    android:textSize="23sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvModeSubtitle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="22dp"
-                    android:text="Enter your details to continue"
+                    android:text="Enter your details to get started"
                     android:textColor="@color/text_dim"
                     android:textSize="14sp" />
 
+                <!-- First Name -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFirstName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="First Name"
@@ -82,10 +87,11 @@
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
                         android:maxLines="1" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Last Name -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilLastName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
@@ -102,14 +108,14 @@
                         android:layout_height="wrap_content"
                         android:inputType="textPersonName"
                         android:maxLines="1" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Email -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:hint="Email"
+                    android:hint="Email Address"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusBottomEnd="12dp"
                     app:boxCornerRadiusBottomStart="12dp"
@@ -122,30 +128,90 @@
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress"
                         android:maxLines="1" />
-
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Password -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:hint="Password"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:endIconMode="password_toggle">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Confirm Password -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:hint="Confirm Password"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:endIconMode="password_toggle">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etConfirmPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Continue -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnContinue"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
                     android:layout_marginTop="22dp"
-                    android:text="Continue"
+                    android:text="Create Account"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:backgroundTint="@color/forest"
                     app:cornerRadius="12dp" />
 
+                <!-- Mode Switch -->
                 <TextView
+                    android:id="@+id/tvSwitchMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="Already have an account? Login"
+                    android:textColor="@color/forest"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <!-- OR -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:text="OR"
                     android:textColor="@color/text_dim"
                     android:textSize="13sp" />
 
+                <!-- Google Sign In -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnGoogle"
                     android:layout_width="match_parent"
@@ -161,18 +227,17 @@
                     app:strokeWidth="1dp" />
 
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center"
-            android:text="By continuing, you agree to use TrueProof responsibly."
+            android:text="Use True Shot AI responsibly. Keep your account password private."
             android:textColor="@color/text_dim"
             android:textSize="12sp" />
 
     </LinearLayout>
-
 </ScrollView>

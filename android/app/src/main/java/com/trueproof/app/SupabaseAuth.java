@@ -1,3 +1,4 @@
+
 package com.trueproof.app;
 
 import android.content.Context;
@@ -7,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -27,399 +29,322 @@ public class SupabaseAuth {
     private final Context context;
 
     public SupabaseAuth(Context context) {
-
         this.context = context.getApplicationContext();
+        this.client = new OkHttpClient();
 
-        client = new OkHttpClient();
-
-        supabaseUrl =
+        this.supabaseUrl =
                 context.getString(R.string.supabase_url);
 
-        publishableKey =
-                context.getString(
-                        R.string.supabase_publishable_key
-                );
+        this.publishableKey =
+                context.getString(R.string.supabase_publishable_key);
     }
 
     // =========================================================
-    // EMAIL OTP
+    // EMAIL + PASSWORD SIGN UP
     // =========================================================
 
-    public void sendEmailOtp(
+    public void signUpWithEmailPassword(
+            String firstName,
+            String lastName,
             String email,
+            String password,
             Callback callback
     ) {
-
         try {
-
             JSONObject json = new JSONObject();
-
             json.put("email", email);
-            json.put("create_user", true);
+            json.put("password", password);
 
-            RequestBody body =
-                    RequestBody.create(
-                            json.toString(),
-                            JSON
-                    );
+            JSONObject data = new JSONObject();
+            data.put("first_name", firstName);
+            data.put("last_name", lastName);
 
-            Request request =
-                    new Request.Builder()
-                            .url(
-                                    supabaseUrl
-                                            + "/auth/v1/otp"
-                            )
-                            .post(body)
-                            .addHeader(
-                                    "apikey",
-                                    publishableKey
-                            )
-                            .addHeader(
-                                    "Content-Type",
-                                    "application/json"
-                            )
-                            .build();
+            json.put("data", data);
 
-            client.newCall(request)
-                    .enqueue(callback);
+            Request request = new Request.Builder()
+                    .url(supabaseUrl + "/auth/v1/signup")
+                    .post(RequestBody.create(json.toString(), JSON))
+                    .addHeader("apikey", publishableKey)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            client.newCall(request).enqueue(
+                    new AuthSessionCallback(email, firstName, lastName, callback)
+            );
 
         } catch (Exception e) {
-
-            callback.onFailure(
-                    null,
-                    new IOException(e)
-            );
+            callback.onFailure(null, new IOException(e));
         }
     }
 
     // =========================================================
-    // VERIFY EMAIL OTP
+    // EMAIL + PASSWORD LOGIN
     // =========================================================
 
-    public void verifyEmailOtp(
+    public void loginWithEmailPassword(
             String email,
-            String token,
+            String password,
             Callback callback
     ) {
-
         try {
-
-            JSONObject json =
-                    new JSONObject();
-
+            JSONObject json = new JSONObject();
             json.put("email", email);
-            json.put("token", token);
-            json.put("type", "email");
+            json.put("password", password);
 
-            RequestBody body =
-                    RequestBody.create(
-                            json.toString(),
-                            JSON
-                    );
+            Request request = new Request.Builder()
+                    .url(supabaseUrl + "/auth/v1/token?grant_type=password")
+                    .post(RequestBody.create(json.toString(), JSON))
+                    .addHeader("apikey", publishableKey)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
 
-            Request request =
-                    new Request.Builder()
-                            .url(
-                                    supabaseUrl
-                                            + "/auth/v1/verify"
-                            )
-                            .post(body)
-                            .addHeader(
-                                    "apikey",
-                                    publishableKey
-                            )
-                            .addHeader(
-                                    "Content-Type",
-                                    "application/json"
-                            )
-                            .build();
+            client.newCall(request).enqueue(
+                    new AuthSessionCallback(email, "", "", callback)
+            );
 
-            client.newCall(
-                    request
-            ).enqueue(new Callback() {
+        } catch (Exception e) {
+            callback.onFailure(null, new IOException(e));
+        }
+    }
 
-                @Override
-                public void onFailure(
-                        okhttp3.Call call,
-                        IOException e
-                ) {
+    // =========================================================
+    // SAVE AUTH SESSION
+    // =========================================================
 
-                    callback.onFailure(
-                            call,
-                            e
-                    );
-                }
+    private class AuthSessionCallback implements Callback {
 
-                @Override
-                public void onResponse(
-                        okhttp3.Call call,
-                        Response response
-                ) throws IOException {
+        private final String email;
+        private final String firstName;
+        private final String lastName;
+        private final Callback originalCallback;
 
-                    if (response.isSuccessful()
-                            && response.body() != null) {
+        AuthSessionCallback(
+                String email,
+                String firstName,
+                String lastName,
+                Callback originalCallback
+        ) {
+            this.email = email;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.originalCallback = originalCallback;
+        }
 
-                        String responseBody =
-                                response.body().string();
+        @Override
+        public void onFailure(Call call, IOException e) {
+            originalCallback.onFailure(call, e);
+        }
 
-                        try {
+        @Override
+        public void onResponse(Call call, Response response)
+                throws IOException {
 
-                            JSONObject result =
-                                    new JSONObject(
-                                            responseBody
-                                    );
+            if (response.isSuccessful() && response.body() != null) {
+                try {
+                    // peekBody reads a copy and keeps the original response
+                    // available to the calling Activity.
+                    String responseText =
+                            response.peekBody(1024 * 1024).string();
 
-                            String accessToken =
-                                    result.optString(
-                                            "access_token",
-                                            ""
-                                    );
+                    JSONObject result = new JSONObject(responseText);
 
-                            String refreshToken =
-                                    result.optString(
-                                            "refresh_token",
-                                            ""
-                                    );
+                    String accessToken =
+                            result.optString("access_token", "");
 
-                            JSONObject user =
-                                    result.optJSONObject(
-                                            "user"
-                                    );
+                    String refreshToken =
+                            result.optString("refresh_token", "");
 
-                            String userId = "";
+                    JSONObject user = result.optJSONObject("user");
 
-                            if (user != null) {
+                    String userId = "";
+                    String actualEmail = email;
+                    String actualFirstName = firstName;
+                    String actualLastName = lastName;
 
-                                userId =
-                                        user.optString(
-                                                "id",
-                                                ""
-                                        );
+                    if (user != null) {
+                        userId = user.optString("id", "");
+
+                        String returnedEmail =
+                                user.optString("email", "");
+
+                        if (!returnedEmail.isEmpty()) {
+                            actualEmail = returnedEmail;
+                        }
+
+                        JSONObject metadata =
+                                user.optJSONObject("user_metadata");
+
+                        if (metadata != null) {
+                            String returnedFirst =
+                                    metadata.optString("first_name", "");
+
+                            String returnedLast =
+                                    metadata.optString("last_name", "");
+
+                            if (!returnedFirst.isEmpty()) {
+                                actualFirstName = returnedFirst;
                             }
 
-                            SharedPreferences prefs =
-                                    context.getSharedPreferences(
-                                            PREFS,
-                                            Context.MODE_PRIVATE
-                                    );
-
-                            prefs.edit()
-                                    .putString(
-                                            "supabase_access_token",
-                                            accessToken
-                                    )
-                                    .putString(
-                                            "supabase_refresh_token",
-                                            refreshToken
-                                    )
-                                    .putString(
-                                            "supabase_user_id",
-                                            userId
-                                    )
-                                    .putString(
-                                            "email",
-                                            email
-                                    )
-                                    .apply();
-
-                        } catch (Exception e) {
-
-                            callback.onFailure(
-                                    call,
-                                    new IOException(e)
-                            );
-
-                            return;
+                            if (!returnedLast.isEmpty()) {
+                                actualLastName = returnedLast;
+                            }
                         }
                     }
 
-                    callback.onResponse(
+                    // Signup may succeed without a session when email
+                    // confirmation is enabled in the Supabase project.
+                    if (!accessToken.isEmpty() && !userId.isEmpty()) {
+                        SharedPreferences prefs =
+                                context.getSharedPreferences(
+                                        PREFS,
+                                        Context.MODE_PRIVATE
+                                );
+
+                        SharedPreferences.Editor editor = prefs.edit();
+
+                        editor.putString(
+                                "supabase_access_token", accessToken
+                        );
+                        editor.putString(
+                                "supabase_refresh_token", refreshToken
+                        );
+                        editor.putString("supabase_user_id", userId);
+                        editor.putString("email", actualEmail);
+                        editor.putString("first_name", actualFirstName);
+                        editor.putString("last_name", actualLastName);
+                        editor.apply();
+                    }
+
+                } catch (Exception e) {
+                    response.close();
+                    originalCallback.onFailure(
                             call,
-                            response
+                            new IOException("Could not read authentication response", e)
                     );
+                    return;
                 }
-            });
+            }
 
-        } catch (Exception e) {
-
-            callback.onFailure(
-                    null,
-                    new IOException(e)
-            );
+            originalCallback.onResponse(call, response);
         }
     }
 
     // =========================================================
     // GOOGLE SIGN-IN
-    // Exchange Google ID Token with Supabase
+    // Keep the existing Google authentication flow
     // =========================================================
 
     public void signInWithGoogleIdToken(
             String idToken,
             Callback callback
     ) {
-
         try {
+            JSONObject json = new JSONObject();
+            json.put("provider", "google");
+            json.put("id_token", idToken);
 
-            JSONObject json =
-                    new JSONObject();
+            Request request = new Request.Builder()
+                    .url(supabaseUrl + "/auth/v1/token?grant_type=id_token")
+                    .post(RequestBody.create(json.toString(), JSON))
+                    .addHeader("apikey", publishableKey)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
 
-            json.put(
-                    "provider",
-                    "google"
-            );
+            client.newCall(request).enqueue(new Callback() {
 
-            json.put(
-                    "id_token",
-                    idToken
-            );
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    callback.onFailure(call, e);
+                }
 
-            RequestBody body =
-                    RequestBody.create(
-                            json.toString(),
-                            JSON
-                    );
+                @Override
+                public void onResponse(Call call, Response response)
+                        throws IOException {
 
-            Request request =
-                    new Request.Builder()
-                            .url(
-                                    supabaseUrl
-                                            + "/auth/v1/token?grant_type=id_token"
-                            )
-                            .post(body)
-                            .addHeader(
-                                    "apikey",
-                                    publishableKey
-                            )
-                            .addHeader(
-                                    "Content-Type",
-                                    "application/json"
-                            )
-                            .build();
-
-            client.newCall(request)
-                    .enqueue(new Callback() {
-
-                        @Override
-                        public void onFailure(
-                                okhttp3.Call call,
-                                IOException e
-                        ) {
-
-                            callback.onFailure(
-                                    call,
-                                    e
+                    if (response.isSuccessful() && response.body() != null) {
+                        try {
+                            JSONObject result = new JSONObject(
+                                    response.peekBody(1024 * 1024).string()
                             );
-                        }
 
-                        @Override
-                        public void onResponse(
-                                okhttp3.Call call,
-                                Response response
-                        ) throws IOException {
+                            String accessToken =
+                                    result.optString("access_token", "");
+                            String refreshToken =
+                                    result.optString("refresh_token", "");
 
-                            if (response.isSuccessful()
-                                    && response.body() != null) {
+                            JSONObject user = result.optJSONObject("user");
 
-                                String responseBody =
-                                        response.body().string();
+                            if (user != null && !accessToken.isEmpty()) {
+                                String userId = user.optString("id", "");
+                                String email = user.optString("email", "");
 
-                                try {
+                                JSONObject metadata =
+                                        user.optJSONObject("user_metadata");
 
-                                    JSONObject result =
-                                            new JSONObject(
-                                                    responseBody
-                                            );
+                                String firstName = "";
+                                String lastName = "";
 
-                                    String accessToken =
-                                            result.optString(
-                                                    "access_token",
-                                                    ""
-                                            );
-
-                                    String refreshToken =
-                                            result.optString(
-                                                    "refresh_token",
-                                                    ""
-                                            );
-
-                                    JSONObject user =
-                                            result.optJSONObject(
-                                                    "user"
-                                            );
-
-                                    String userId = "";
-                                    String email = "";
-
-                                    if (user != null) {
-
-                                        userId =
-                                                user.optString(
-                                                        "id",
-                                                        ""
-                                                );
-
-                                        email =
-                                                user.optString(
-                                                        "email",
-                                                        ""
-                                                );
-                                    }
-
-                                    SharedPreferences prefs =
-                                            context.getSharedPreferences(
-                                                    PREFS,
-                                                    Context.MODE_PRIVATE
-                                            );
-
-                                    prefs.edit()
-                                            .putString(
-                                                    "supabase_access_token",
-                                                    accessToken
-                                            )
-                                            .putString(
-                                                    "supabase_refresh_token",
-                                                    refreshToken
-                                            )
-                                            .putString(
-                                                    "supabase_user_id",
-                                                    userId
-                                            )
-                                            .putString(
-                                                    "email",
-                                                    email
-                                            )
-                                            .apply();
-
-                                } catch (Exception e) {
-
-                                    callback.onFailure(
-                                            call,
-                                            new IOException(e)
+                                if (metadata != null) {
+                                    firstName = metadata.optString(
+                                            "first_name", ""
+                                    );
+                                    lastName = metadata.optString(
+                                            "last_name", ""
                                     );
 
-                                    return;
+                                    if (firstName.isEmpty()) {
+                                        firstName = metadata.optString(
+                                                "full_name", ""
+                                        );
+                                    }
                                 }
+
+                                SharedPreferences prefs =
+                                        context.getSharedPreferences(
+                                                PREFS,
+                                                Context.MODE_PRIVATE
+                                        );
+
+                                prefs.edit()
+                                        .putString(
+                                                "supabase_access_token",
+                                                accessToken
+                                        )
+                                        .putString(
+                                                "supabase_refresh_token",
+                                                refreshToken
+                                        )
+                                        .putString("supabase_user_id", userId)
+                                        .putString("email", email)
+                                        .putString("first_name", firstName)
+                                        .putString("last_name", lastName)
+                                        .apply();
                             }
 
-                            callback.onResponse(
+                        } catch (Exception e) {
+                            response.close();
+                            callback.onFailure(
                                     call,
-                                    response
+                                    new IOException(
+                                            "Could not read Google login response",
+                                            e
+                                    )
                             );
+                            return;
                         }
-                    });
+                    }
+
+                    callback.onResponse(call, response);
+                }
+            });
 
         } catch (Exception e) {
-
-            callback.onFailure(
-                    null,
-                    new IOException(e)
-            );
+            callback.onFailure(null, new IOException(e));
         }
     }
 
     // =========================================================
-    // SAVE PROFILE
+    // SAVE PROFILE TO SUPABASE AND LOCAL STORAGE
     // =========================================================
 
     public void saveProfile(
@@ -428,16 +353,9 @@ public class SupabaseAuth {
             String email,
             Callback callback
     ) {
-
         try {
-
             String userId = getUserId();
             String accessToken = getAccessToken();
-
-            // -------------------------------------------------
-            // SAVE PROFILE LOCALLY
-            // This is used by Home screen
-            // -------------------------------------------------
 
             SharedPreferences prefs =
                     context.getSharedPreferences(
@@ -446,180 +364,80 @@ public class SupabaseAuth {
                     );
 
             prefs.edit()
-                    .putString(
-                            "first_name",
-                            firstName
-                    )
-                    .putString(
-                            "last_name",
-                            lastName
-                    )
-                    .putString(
-                            "email",
-                            email
-                    )
+                    .putString("first_name", firstName)
+                    .putString("last_name", lastName)
+                    .putString("email", email)
                     .apply();
 
-            // -------------------------------------------------
-            // SAVE PROFILE TO SUPABASE
-            // -------------------------------------------------
+            if (userId.isEmpty() || accessToken.isEmpty()) {
+                callback.onFailure(
+                        null,
+                        new IOException("Authentication session is missing")
+                );
+                return;
+            }
 
             JSONObject json = new JSONObject();
-
             json.put("id", userId);
             json.put("first_name", firstName);
             json.put("last_name", lastName);
             json.put("email", email);
 
-            RequestBody body =
-                    RequestBody.create(
-                            json.toString(),
-                            JSON
-                    );
+            Request request = new Request.Builder()
+                    .url(supabaseUrl + "/rest/v1/profiles?on_conflict=id")
+                    .post(RequestBody.create(json.toString(), JSON))
+                    .addHeader("apikey", publishableKey)
+                    .addHeader("Authorization", "Bearer " + accessToken)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader(
+                            "Prefer",
+                            "resolution=merge-duplicates,return=minimal"
+                    )
+                    .build();
 
-            Request request =
-                    new Request.Builder()
-                            .url(
-                                    supabaseUrl
-                                            + "/rest/v1/profiles"
-                            )
-                            .post(body)
-                            .addHeader(
-                                    "apikey",
-                                    publishableKey
-                            )
-                            .addHeader(
-                                    "Authorization",
-                                    "Bearer " + accessToken
-                            )
-                            .addHeader(
-                                    "Content-Type",
-                                    "application/json"
-                            )
-                            .addHeader(
-                                    "Prefer",
-                                    "resolution=merge-duplicates"
-                            )
-                            .build();
-
-            client.newCall(request)
-                    .enqueue(callback);
+            client.newCall(request).enqueue(callback);
 
         } catch (Exception e) {
-
-            callback.onFailure(
-                    null,
-                    new IOException(e)
-            );
+            callback.onFailure(null, new IOException(e));
         }
     }
 
     // =========================================================
-    // GET FIRST NAME
+    // GETTERS
     // =========================================================
 
     public String getFirstName() {
-
-        SharedPreferences prefs =
-                context.getSharedPreferences(
-                        PREFS,
-                        Context.MODE_PRIVATE
-                );
-
-        return prefs.getString(
-                "first_name",
-                ""
-        );
+        return getStoredValue("first_name");
     }
-
-    // =========================================================
-    // GET LAST NAME
-    // =========================================================
 
     public String getLastName() {
-
-        SharedPreferences prefs =
-                context.getSharedPreferences(
-                        PREFS,
-                        Context.MODE_PRIVATE
-                );
-
-        return prefs.getString(
-                "last_name",
-                ""
-        );
+        return getStoredValue("last_name");
     }
-
-    // =========================================================
-    // GET EMAIL
-    // =========================================================
 
     public String getEmail() {
-
-        SharedPreferences prefs =
-                context.getSharedPreferences(
-                        PREFS,
-                        Context.MODE_PRIVATE
-                );
-
-        return prefs.getString(
-                "email",
-                ""
-        );
+        return getStoredValue("email");
     }
-
-    // =========================================================
-    // GET ACCESS TOKEN
-    // =========================================================
 
     public String getAccessToken() {
-
-        SharedPreferences prefs =
-                context.getSharedPreferences(
-                        PREFS,
-                        Context.MODE_PRIVATE
-                );
-
-        return prefs.getString(
-                "supabase_access_token",
-                ""
-        );
+        return getStoredValue("supabase_access_token");
     }
-
-    // =========================================================
-    // GET REFRESH TOKEN
-    // =========================================================
 
     public String getRefreshToken() {
-
-        SharedPreferences prefs =
-                context.getSharedPreferences(
-                        PREFS,
-                        Context.MODE_PRIVATE
-                );
-
-        return prefs.getString(
-                "supabase_refresh_token",
-                ""
-        );
+        return getStoredValue("supabase_refresh_token");
     }
 
-    // =========================================================
-    // GET USER ID
-    // =========================================================
-
     public String getUserId() {
+        return getStoredValue("supabase_user_id");
+    }
 
+    private String getStoredValue(String key) {
         SharedPreferences prefs =
                 context.getSharedPreferences(
                         PREFS,
                         Context.MODE_PRIVATE
                 );
 
-        return prefs.getString(
-                "supabase_user_id",
-                ""
-        );
+        return prefs.getString(key, "");
     }
 
     // =========================================================
@@ -627,7 +445,6 @@ public class SupabaseAuth {
     // =========================================================
 
     public boolean isLoggedIn() {
-
         return !getAccessToken().isEmpty()
                 && !getUserId().isEmpty();
     }
@@ -637,7 +454,6 @@ public class SupabaseAuth {
     // =========================================================
 
     public void logout() {
-
         SharedPreferences prefs =
                 context.getSharedPreferences(
                         PREFS,
@@ -652,5 +468,55 @@ public class SupabaseAuth {
                 .remove("last_name")
                 .remove("email")
                 .apply();
+    }
+
+    // =========================================================
+    // TEMPORARY COMPATIBILITY FOR THE OLD LOGIN ACTIVITY
+    // Remove these methods after LoginActivity is updated.
+    // =========================================================
+
+    public void sendEmailOtp(String email, Callback callback) {
+        try {
+            JSONObject json = new JSONObject();
+            json.put("email", email);
+            json.put("create_user", true);
+
+            Request request = new Request.Builder()
+                    .url(supabaseUrl + "/auth/v1/otp")
+                    .post(RequestBody.create(json.toString(), JSON))
+                    .addHeader("apikey", publishableKey)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            client.newCall(request).enqueue(callback);
+
+        } catch (Exception e) {
+            callback.onFailure(null, new IOException(e));
+        }
+    }
+
+    public void verifyEmailOtp(
+            String email,
+            String token,
+            Callback callback
+    ) {
+        try {
+            JSONObject json = new JSONObject();
+            json.put("email", email);
+            json.put("token", token);
+            json.put("type", "email");
+
+            Request request = new Request.Builder()
+                    .url(supabaseUrl + "/auth/v1/verify")
+                    .post(RequestBody.create(json.toString(), JSON))
+                    .addHeader("apikey", publishableKey)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            client.newCall(request).enqueue(callback);
+
+        } catch (Exception e) {
+            callback.onFailure(null, new IOException(e));
+        }
     }
 }

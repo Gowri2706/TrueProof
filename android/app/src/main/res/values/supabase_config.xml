@@ -1,8 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="supabase_url">https://ssalsngrpzjyvhomyspl.supabase.co</string>
-
-    <string name="supabase_publishable_key">sb_publishable_bww1uR3Y0k3014R2E58KQw_2rMxT6EJ</string>
-
 </resources>

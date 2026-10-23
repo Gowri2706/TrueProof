@@ -1,3 +1,4 @@
+
 package com.trueproof.app;
 
 import android.content.Context;
@@ -221,9 +222,7 @@ public class AnalyzingActivity extends AppCompatActivity {
         if (imagePath == null
                 || imagePath.trim().isEmpty()) {
 
-            Log.e(TAG,
-                    "ERROR: Image path is empty"
-            );
+            Log.e(TAG, "ERROR: Image path is empty");
 
             showError("Image not found");
 
@@ -244,8 +243,7 @@ public class AnalyzingActivity extends AppCompatActivity {
         if (!imageFile.exists()) {
 
             Log.e(TAG,
-                    "ERROR: Image file does not exist"
-            );
+                    "ERROR: Image file does not exist");
 
             showError(
                     "Selected image is unavailable"
@@ -254,35 +252,25 @@ public class AnalyzingActivity extends AppCompatActivity {
             return;
         }
 
-        // -----------------------------------------------------
         // LOAD AI MODEL + OCR
-        // -----------------------------------------------------
 
         try {
 
-            Log.d(TAG,
-                    "Loading TFLite model..."
-            );
+            Log.d(TAG, "Loading TFLite model...");
 
             classifier =
                     new TFLiteClassifier(this);
 
-            Log.d(TAG,
-                    "TFLite model loaded"
-            );
+            Log.d(TAG, "TFLite model loaded");
 
-            Log.d(TAG,
-                    "Loading ML Kit OCR..."
-            );
+            Log.d(TAG, "Loading ML Kit OCR...");
 
             textRecognizer =
                     TextRecognition.getClient(
                             TextRecognizerOptions.DEFAULT_OPTIONS
                     );
 
-            Log.d(TAG,
-                    "ML Kit OCR loaded"
-            );
+            Log.d(TAG, "ML Kit OCR loaded");
 
         } catch (IOException e) {
 
@@ -298,9 +286,7 @@ public class AnalyzingActivity extends AppCompatActivity {
             return;
         }
 
-        // -----------------------------------------------------
         // RUN AI IN BACKGROUND
-        // -----------------------------------------------------
 
         new Thread(
                 () -> runAIAnalysis(imageFile)
@@ -311,13 +297,9 @@ public class AnalyzingActivity extends AppCompatActivity {
     // RUN TFLITE
     // =========================================================
 
-    private void runAIAnalysis(
-            File imageFile
-    ) {
+    private void runAIAnalysis(File imageFile) {
 
-        Log.d(TAG,
-                "AI THREAD START"
-        );
+        Log.d(TAG, "AI THREAD START");
 
         Bitmap bitmap =
                 BitmapFactory.decodeFile(
@@ -326,13 +308,9 @@ public class AnalyzingActivity extends AppCompatActivity {
 
         if (bitmap == null) {
 
-            Log.e(TAG,
-                    "ERROR: Bitmap decode failed"
-            );
+            Log.e(TAG, "ERROR: Bitmap decode failed");
 
-            showError(
-                    "Could not decode image"
-            );
+            showError("Could not decode image");
 
             return;
         }
@@ -346,45 +324,26 @@ public class AnalyzingActivity extends AppCompatActivity {
 
         try {
 
-            // -------------------------------------------------
-            // TFLITE CLASSIFICATION
-            // -------------------------------------------------
-
-            Log.d(TAG,
-                    "TFLite classification START"
-            );
+            Log.d(TAG, "TFLite classification START");
 
             analysisResult =
                     classifier.classify(bitmap);
 
-            Log.d(TAG,
-                    "TFLite classification DONE"
-            );
+            Log.d(TAG, "TFLite classification DONE");
 
             Log.d(TAG,
-                    "Verdict = "
-                            + analysisResult.verdict
-            );
+                    "Verdict = " + analysisResult.verdict);
 
             Log.d(TAG,
                     "Probability genuine = "
-                            + analysisResult.probabilityGenuine
-            );
+                            + analysisResult.probabilityGenuine);
 
             Log.d(TAG,
-                    "Confidence = "
-                            + analysisResult.confidence
-            );
+                    "Confidence = " + analysisResult.confidence);
 
             bitmap.recycle();
 
-            // -------------------------------------------------
-            // MOVE TO OCR
-            // -------------------------------------------------
-
-            Log.d(TAG,
-                    "Moving from AI -> OCR"
-            );
+            Log.d(TAG, "Moving from AI -> OCR");
 
             runOnUiThread(
                     this::runOCR
@@ -397,11 +356,11 @@ public class AnalyzingActivity extends AppCompatActivity {
                     e
             );
 
-            bitmap.recycle();
+            if (!bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
 
-            showError(
-                    "AI analysis failed"
-            );
+            showError("AI analysis failed");
         }
     }
 
@@ -411,23 +370,13 @@ public class AnalyzingActivity extends AppCompatActivity {
 
     private void runOCR() {
 
-        Log.d(TAG,
-                "================================="
-        );
-
-        Log.d(TAG,
-                "OCR START"
-        );
-
-        Log.d(TAG,
-                "================================="
-        );
+        Log.d(TAG, "=================================");
+        Log.d(TAG, "OCR START");
+        Log.d(TAG, "=================================");
 
         if (textRecognizer == null) {
 
-            Log.e(TAG,
-                    "ERROR: textRecognizer is NULL"
-            );
+            Log.e(TAG, "ERROR: textRecognizer is NULL");
 
             finishAnalysis();
 
@@ -438,15 +387,11 @@ public class AnalyzingActivity extends AppCompatActivity {
                 new File(imagePath);
 
         Log.d(TAG,
-                "OCR image exists = "
-                        + imageFile.exists()
-        );
+                "OCR image exists = " + imageFile.exists());
 
         if (!imageFile.exists()) {
 
-            Log.e(TAG,
-                    "ERROR: OCR image file missing"
-            );
+            Log.e(TAG, "ERROR: OCR image file missing");
 
             finishAnalysis();
 
@@ -461,86 +406,53 @@ public class AnalyzingActivity extends AppCompatActivity {
                             Uri.fromFile(imageFile)
                     );
 
-            Log.d(TAG,
-                    "InputImage created successfully"
-            );
-
-            Log.d(TAG,
-                    "Sending image to ML Kit..."
-            );
+            Log.d(TAG, "InputImage created successfully");
+            Log.d(TAG, "Sending image to ML Kit...");
 
             textRecognizer
                     .process(image)
+                    .addOnSuccessListener(text -> {
 
-                    .addOnSuccessListener(
-                            text -> {
+                        Log.d(TAG, "OCR SUCCESS");
 
-                                Log.d(TAG,
-                                        "OCR SUCCESS"
-                                );
+                        String fullText =
+                                text.getText();
 
-                                String fullText =
-                                        text.getText();
+                        if (fullText == null) {
 
-                                if (fullText == null) {
+                            Log.e(TAG, "OCR returned NULL text");
 
-                                    Log.e(TAG,
-                                            "OCR returned NULL text"
-                                    );
+                        } else {
 
-                                } else {
+                            Log.d(TAG, "OCR TEXT START");
+                            Log.d(TAG, fullText);
+                            Log.d(TAG, "OCR TEXT END");
+                        }
 
-                                    Log.d(TAG,
-                                            "OCR TEXT START"
-                                    );
+                        extractedAmount =
+                                extractAmount(text);
 
-                                    Log.d(TAG,
-                                            fullText
-                                    );
+                        if (extractedAmount != null) {
 
-                                    Log.d(TAG,
-                                            "OCR TEXT END"
-                                    );
-                                }
+                            Log.d(TAG,
+                                    "AMOUNT FOUND = ₹"
+                                            + extractedAmount);
 
-                                // ---------------------------------
-                                // EXTRACT AMOUNT
-                                // ---------------------------------
+                        } else {
 
-                                extractedAmount =
-                                        extractAmount(text);
+                            Log.e(TAG, "AMOUNT NOT FOUND");
+                        }
 
-                                if (extractedAmount != null) {
+                        finishAnalysis();
+                    })
+                    .addOnFailureListener(e -> {
 
-                                    Log.d(TAG,
-                                            "AMOUNT FOUND = ₹"
-                                                    + extractedAmount
-                                    );
+                        Log.e(TAG, "OCR FAILED", e);
 
-                                } else {
+                        extractedAmount = null;
 
-                                    Log.e(TAG,
-                                            "AMOUNT NOT FOUND"
-                                    );
-                                }
-
-                                finishAnalysis();
-                            }
-                    )
-
-                    .addOnFailureListener(
-                            e -> {
-
-                                Log.e(TAG,
-                                        "OCR FAILED",
-                                        e
-                                );
-
-                                extractedAmount = null;
-
-                                finishAnalysis();
-                            }
-                    );
+                        finishAnalysis();
+                    });
 
         } catch (IOException e) {
 
@@ -559,15 +471,11 @@ public class AnalyzingActivity extends AppCompatActivity {
     // EXTRACT AMOUNT
     // =========================================================
 
-    private String extractAmount(
-            Text text
-    ) {
+    private String extractAmount(Text text) {
 
         if (text == null) {
 
-            Log.e(TAG,
-                    "extractAmount(): Text is NULL"
-            );
+            Log.e(TAG, "extractAmount(): Text is NULL");
 
             return null;
         }
@@ -578,47 +486,24 @@ public class AnalyzingActivity extends AppCompatActivity {
         if (fullText == null
                 || fullText.trim().isEmpty()) {
 
-            Log.e(TAG,
-                    "extractAmount(): OCR text empty"
-            );
+            Log.e(TAG, "extractAmount(): OCR text empty");
 
             return null;
         }
 
-        Log.d(TAG,
-                "Amount extraction started"
-        );
-
-        // -----------------------------------------------------
-        // NORMALIZE OCR TEXT
-        // -----------------------------------------------------
+        Log.d(TAG, "Amount extraction started");
 
         String normalizedText =
                 fullText
                         .replace('\n', ' ')
                         .replace('\r', ' ')
-                        .replaceAll(
-                                "\\s+",
-                                " "
-                        )
+                        .replaceAll("\\s+", " ")
                         .trim();
 
         Log.d(TAG,
-                "Normalized OCR text = "
-                        + normalizedText
-        );
+                "Normalized OCR text = " + normalizedText);
 
-        // =====================================================
         // 1. EXPLICIT CURRENCY
-        //
-        // ₹500
-        // ₹ 500
-        // ₹1,250
-        // ₹ 1,250.00
-        // Rs 500
-        // Rs. 500
-        // INR 500
-        // =====================================================
 
         Pattern currencyPattern =
                 Pattern.compile(
@@ -629,36 +514,23 @@ public class AnalyzingActivity extends AppCompatActivity {
                 );
 
         Matcher currencyMatcher =
-                currencyPattern.matcher(
-                        normalizedText
-                );
+                currencyPattern.matcher(normalizedText);
 
         if (currencyMatcher.find()) {
 
             String amount =
-                    cleanAmount(
-                            currencyMatcher.group(2)
-                    );
+                    cleanAmount(currencyMatcher.group(2));
 
             if (amount != null) {
 
                 Log.d(TAG,
-                        "Currency amount accepted = ₹"
-                                + amount
-                );
+                        "Currency amount accepted = ₹" + amount);
 
                 return amount;
             }
         }
 
-        // =====================================================
         // 2. LABEL PATTERN
-        //
-        // Amount: 4400
-        // Paid 4400
-        // Sent 4400
-        // Amount ₹4400
-        // =====================================================
 
         Pattern labeledAmountPattern =
                 Pattern.compile(
@@ -671,60 +543,30 @@ public class AnalyzingActivity extends AppCompatActivity {
                 );
 
         Matcher labeledMatcher =
-                labeledAmountPattern.matcher(
-                        normalizedText
-                );
+                labeledAmountPattern.matcher(normalizedText);
 
         if (labeledMatcher.find()) {
 
             String amount =
-                    cleanAmount(
-                            labeledMatcher.group(1)
-                    );
+                    cleanAmount(labeledMatcher.group(1));
 
             if (amount != null) {
 
                 Log.d(TAG,
-                        "Label amount accepted = ₹"
-                                + amount
-                );
+                        "Label amount accepted = ₹" + amount);
 
                 return amount;
             }
         }
 
-        // =====================================================
         // 3. GOOGLE PAY SUCCESS SCREEN
-        //
-        // PDF OCR example:
-        //
-        // To VIKASHINI S T 50 23 Jul 2026, 7:11am
-        // ...
-        // Completed Google Pay
-        // ...
-        // Share 50
-        //
-        // The FIRST 50 belongs to the transaction.
-        // The 50 after Share is ignored.
-        // =====================================================
 
         String lowerText =
                 normalizedText.toLowerCase(Locale.US);
 
         if (lowerText.contains("completed google pay")) {
 
-            Log.d(TAG,
-                    "Google Pay success screen detected"
-            );
-
-            // -------------------------------------------------
-            // Pattern:
-            //
-            // VIKASHINI S T 50 23 Jul 2026
-            //
-            // Capture the number immediately before
-            // the transaction date.
-            // -------------------------------------------------
+            Log.d(TAG, "Google Pay success screen detected");
 
             Pattern gpayAmountPattern =
                     Pattern.compile(
@@ -740,39 +582,22 @@ public class AnalyzingActivity extends AppCompatActivity {
                     );
 
             Matcher gpayMatcher =
-                    gpayAmountPattern.matcher(
-                            normalizedText
-                    );
+                    gpayAmountPattern.matcher(normalizedText);
 
             if (gpayMatcher.find()) {
 
-                String amount =
-                        gpayMatcher.group(1);
-
-                Log.d(TAG,
-                        "Google Pay date-adjacent amount = "
-                                + amount
-                );
-
                 String cleanedAmount =
-                        cleanAmount(amount);
+                        cleanAmount(gpayMatcher.group(1));
 
                 if (cleanedAmount != null) {
 
                     Log.d(TAG,
                             "Google Pay amount ACCEPTED = ₹"
-                                    + cleanedAmount
-                    );
+                                    + cleanedAmount);
 
                     return cleanedAmount;
                 }
             }
-
-            // -------------------------------------------------
-            // Second GPay pattern:
-            //
-            // To: VIKASHINI S T 50 23 Jul 2026
-            // -------------------------------------------------
 
             Pattern gpayToPattern =
                     Pattern.compile(
@@ -792,43 +617,25 @@ public class AnalyzingActivity extends AppCompatActivity {
                     );
 
             Matcher gpayToMatcher =
-                    gpayToPattern.matcher(
-                            normalizedText
-                    );
+                    gpayToPattern.matcher(normalizedText);
 
             if (gpayToMatcher.find()) {
 
-                String amount =
-                        gpayToMatcher.group(1);
-
-                Log.d(TAG,
-                        "Google Pay To-pattern amount = "
-                                + amount
-                );
-
                 String cleanedAmount =
-                        cleanAmount(amount);
+                        cleanAmount(gpayToMatcher.group(1));
 
                 if (cleanedAmount != null) {
 
                     Log.d(TAG,
                             "Google Pay To-pattern ACCEPTED = ₹"
-                                    + cleanedAmount
-                    );
+                                    + cleanedAmount);
 
                     return cleanedAmount;
                 }
             }
         }
 
-        // =====================================================
         // 4. FORMATTED INDIAN AMOUNT
-        //
-        // 1,000
-        // 4,400
-        // 12,500
-        // 1,25,000
-        // =====================================================
 
         Pattern formattedIndianAmountPattern =
                 Pattern.compile(
@@ -841,35 +648,24 @@ public class AnalyzingActivity extends AppCompatActivity {
                 );
 
         Matcher formattedMatcher =
-                formattedIndianAmountPattern.matcher(
-                        normalizedText
-                );
+                formattedIndianAmountPattern.matcher(normalizedText);
 
         if (formattedMatcher.find()) {
 
             String amount =
-                    cleanAmount(
-                            formattedMatcher.group()
-                    );
+                    cleanAmount(formattedMatcher.group());
 
             if (amount != null) {
 
                 Log.d(TAG,
                         "Formatted Indian amount accepted = ₹"
-                                + amount
-                );
+                                + amount);
 
                 return amount;
             }
         }
 
-        // =====================================================
-        // NOTHING VERIFIED
-        // =====================================================
-
-        Log.e(TAG,
-                "NO VERIFIED AMOUNT FOUND"
-        );
+        Log.e(TAG, "NO VERIFIED AMOUNT FOUND");
 
         return null;
     }
@@ -878,25 +674,19 @@ public class AnalyzingActivity extends AppCompatActivity {
     // CLEAN AMOUNT
     // =========================================================
 
-    private String cleanAmount(
-            String amount
-    ) {
+    private String cleanAmount(String amount) {
 
         if (amount == null) {
             return null;
         }
 
         amount =
-                amount
-                        .replace(",", "")
-                        .trim();
+                amount.replace(",", "").trim();
 
         try {
 
             double value =
-                    Double.parseDouble(
-                            amount
-                    );
+                    Double.parseDouble(amount);
 
             if (value < 0) {
                 return null;
@@ -922,9 +712,7 @@ public class AnalyzingActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
 
             Log.e(TAG,
-                    "Invalid amount = "
-                            + amount
-            );
+                    "Invalid amount = " + amount);
 
             return null;
         }
@@ -936,35 +724,26 @@ public class AnalyzingActivity extends AppCompatActivity {
 
     private void finishAnalysis() {
 
-        Log.d(TAG,
-                "finishAnalysis() called"
-        );
+        Log.d(TAG, "finishAnalysis() called");
+
+        if (analysisFinished) {
+            return;
+        }
 
         analysisFinished = true;
 
         long elapsed =
-                System.currentTimeMillis()
-                        - analysisStartTime;
+                System.currentTimeMillis() - analysisStartTime;
 
         long remaining =
-                MIN_ANALYSIS_TIME
-                        - elapsed;
+                MIN_ANALYSIS_TIME - elapsed;
 
         if (remaining < 0) {
             remaining = 0;
         }
 
-        Log.d(TAG,
-                "Analysis elapsed = "
-                        + elapsed
-                        + " ms"
-        );
-
-        Log.d(TAG,
-                "Waiting remaining = "
-                        + remaining
-                        + " ms"
-        );
+        Log.d(TAG, "Analysis elapsed = " + elapsed + " ms");
+        Log.d(TAG, "Waiting remaining = " + remaining + " ms");
 
         handler.postDelayed(
                 this::openResult,
@@ -978,41 +757,28 @@ public class AnalyzingActivity extends AppCompatActivity {
 
     private void openResult() {
 
-        Log.d(TAG,
-                "================================="
-        );
-
-        Log.d(TAG,
-                "OPEN RESULT"
-        );
+        Log.d(TAG, "=================================");
+        Log.d(TAG, "OPEN RESULT");
 
         if (resultOpened) {
 
-            Log.d(TAG,
-                    "Result already opened"
-            );
+            Log.d(TAG, "Result already opened");
 
             return;
         }
 
         if (!analysisFinished) {
 
-            Log.e(TAG,
-                    "ERROR: analysisFinished = false"
-            );
+            Log.e(TAG, "ERROR: analysisFinished = false");
 
             return;
         }
 
         if (analysisResult == null) {
 
-            Log.e(TAG,
-                    "ERROR: analysisResult = NULL"
-            );
+            Log.e(TAG, "ERROR: analysisResult = NULL");
 
-            showError(
-                    "Could not complete analysis"
-            );
+            showError("Could not complete analysis");
 
             return;
         }
@@ -1023,81 +789,86 @@ public class AnalyzingActivity extends AppCompatActivity {
                 "TP-" + System.currentTimeMillis();
 
         double confidencePercent =
-                analysisResult.confidence
-                        * 100.0;
+                analysisResult.confidence * 100.0;
 
-        Log.d(TAG,
-                "Scan ID = "
-                        + scanId
-        );
-
-        Log.d(TAG,
-                "Final verdict = "
-                        + analysisResult.verdict
-        );
-
-        Log.d(TAG,
-                "Final confidence = "
-                        + confidencePercent
-        );
-
-        Log.d(TAG,
-                "Final extracted amount = "
-                        + extractedAmount
-        );
+        Log.d(TAG, "Scan ID = " + scanId);
+        Log.d(TAG, "Final verdict = " + analysisResult.verdict);
+        Log.d(TAG, "Final confidence = " + confidencePercent);
+        Log.d(TAG, "Final extracted amount = " + extractedAmount);
 
         // =====================================================
-        // SAVE TO DATABASE
+        // PREPARE SCAN ITEM
+        // =====================================================
+
+        HistoryItem item = new HistoryItem();
+
+        item.scanId = scanId;
+        item.amount = extractedAmount;
+        item.upiId = null;
+        item.verdict = analysisResult.verdict;
+        item.confidence = confidencePercent;
+        item.timestamp = System.currentTimeMillis();
+        item.imagePath = imagePath;
+
+        // =====================================================
+        // SAVE SCAN UNDER CURRENT SUPABASE USER
         // =====================================================
 
         DatabaseHelper db =
-                new DatabaseHelper(
-                        AnalyzingActivity.this
-                );
+                new DatabaseHelper(AnalyzingActivity.this);
 
-        HistoryItem item =
-                new HistoryItem();
+        try {
 
-        item.scanId =
-                scanId;
+            SupabaseAuth auth =
+                    new SupabaseAuth(AnalyzingActivity.this);
 
-        item.amount =
-                extractedAmount;
+            String userId = auth.getUserId();
 
-        item.upiId =
-                null;
+            if (userId == null || userId.trim().isEmpty()) {
 
-        item.verdict =
-                analysisResult.verdict;
+                Log.e(TAG,
+                        "History not saved: current user ID is missing");
 
-        item.confidence =
-                confidencePercent;
+                Toast.makeText(
+                        AnalyzingActivity.this,
+                        "Scan completed, but history was not saved because no user is logged in.",
+                        Toast.LENGTH_LONG
+                ).show();
 
-        item.timestamp =
-                System.currentTimeMillis();
+            } else {
 
-        item.imagePath =
-                imagePath;
+                Log.d(TAG,
+                        "Saving scan for user ID = " + userId);
 
-        Log.d(TAG,
-                "DATABASE SAVE START"
-        );
+                long savedRowId =
+                        db.insertScan(item, userId);
 
-        Log.d(TAG,
-                "DB amount = "
-                        + item.amount
-        );
+                if (savedRowId != -1L) {
 
-        Log.d(TAG,
-                "DB verdict = "
-                        + item.verdict
-        );
+                    Log.d(TAG,
+                            "DATABASE SAVE SUCCESS. Row ID = "
+                                    + savedRowId);
 
-        db.insertScan(item);
+                } else {
 
-        Log.d(TAG,
-                "DATABASE SAVE DONE"
-        );
+                    Log.e(TAG, "DATABASE SAVE FAILED");
+                }
+            }
+
+        } catch (Exception e) {
+
+            Log.e(TAG, "ERROR SAVING SCAN HISTORY", e);
+
+            Toast.makeText(
+                    AnalyzingActivity.this,
+                    "Scan completed, but history could not be saved.",
+                    Toast.LENGTH_LONG
+            ).show();
+
+        } finally {
+
+            db.close();
+        }
 
         // =====================================================
         // OPEN RESULT ACTIVITY
@@ -1109,10 +880,7 @@ public class AnalyzingActivity extends AppCompatActivity {
                         ResultActivity.class
                 );
 
-        intent.putExtra(
-                "scan_id",
-                scanId
-        );
+        intent.putExtra("scan_id", scanId);
 
         intent.putExtra(
                 "verdict",
@@ -1142,9 +910,7 @@ public class AnalyzingActivity extends AppCompatActivity {
             );
         }
 
-        Log.d(TAG,
-                "Opening ResultActivity"
-        );
+        Log.d(TAG, "Opening ResultActivity");
 
         startActivity(intent);
 
@@ -1155,27 +921,20 @@ public class AnalyzingActivity extends AppCompatActivity {
     // ERROR
     // =========================================================
 
-    private void showError(
-            String message
-    ) {
+    private void showError(String message) {
 
-        Log.e(TAG,
-                "SHOW ERROR = "
-                        + message
-        );
+        Log.e(TAG, "SHOW ERROR = " + message);
 
-        runOnUiThread(
-                () -> {
+        runOnUiThread(() -> {
 
-                    Toast.makeText(
-                            AnalyzingActivity.this,
-                            message,
-                            Toast.LENGTH_LONG
-                    ).show();
+            Toast.makeText(
+                    AnalyzingActivity.this,
+                    message,
+                    Toast.LENGTH_LONG
+            ).show();
 
-                    finish();
-                }
-        );
+            finish();
+        });
     }
 
     // =========================================================
@@ -1185,13 +944,9 @@ public class AnalyzingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
 
-        Log.d(TAG,
-                "AnalyzingActivity destroyed"
-        );
+        Log.d(TAG, "AnalyzingActivity destroyed");
 
-        handler.removeCallbacksAndMessages(
-                null
-        );
+        handler.removeCallbacksAndMessages(null);
 
         if (classifier != null) {
 

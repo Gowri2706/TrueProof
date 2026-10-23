@@ -5,13 +5,15 @@
     <string name="tagline">AI-Powered Screenshot Verification</string>
 
     <!-- Supabase / Google Sign-In -->
+    <string name="supabase_url" translatable="false">https://fakooztwimsbuxpicolm.supabase.co</string>
+    <string name="supabase_publishable_key" translatable="false">sb_publishable_eM-k4-I1jiyqlYCbng8FbQ_SzSVzUxf</string>
     <string name="google_web_client_id" translatable="false">931461148519-022l8b0cohbji0dobu85r60h3pdcr9ek.apps.googleusercontent.com</string>
 
     <!-- Common -->
     <string name="back">‹</string>
     <string name="chevron">›</string>
 
-    <!-- Bottom nav -->
+    <!-- Bottom navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_scan">Scan</string>
     <string name="nav_history">History</string>
@@ -102,22 +104,17 @@
 
     <!-- Terms of Service -->
     <string name="terms_intro">By using True Shot AI, you agree to the following terms of service.</string>
-
     <string name="terms_using_title">Using the app</string>
     <string name="terms_using_text">You must use this app only for lawful purposes. You must not misuse the service or use it with the intention of causing harm to others.</string>
-
     <string name="terms_content_title">Your content</string>
     <string name="terms_content_text">You retain ownership of the photos and screenshots you scan. They are used only for the purposes necessary to provide your scan results.</string>
-
     <string name="terms_changes_title">Changes to these terms</string>
     <string name="terms_changes_text">We may update these terms of service when necessary. If important changes are made, you will be notified through the app.</string>
 
     <!-- Privacy Policy -->
     <string name="privacy_intro">This privacy policy explains how we handle your personal information and the content you scan using True Shot AI.</string>
-
     <string name="privacy_collect_title">What we collect</string>
     <string name="privacy_collect_text">Your name, email address, and photos or screenshots that you scan may be collected when necessary to provide the service.</string>
-
     <string name="privacy_use_title">How we use your information</string>
     <string name="privacy_use_text">This information is used to provide your scan results, manage your scan history, and provide the app services. We do not sell your personal information.</string>
     <string name="privacy_choices_title">Your choices</string>
@@ -125,19 +122,14 @@
 
     <!-- Help & Support -->
     <string name="common_questions">Common questions</string>
-
     <string name="faq_how_scan">How do I scan?</string>
     <string name="faq_how_scan_answer">Open the Scan tab, point your camera or pick a photo from your gallery, and wait a few seconds for the result.</string>
-
     <string name="faq_scan_fail">Why did my scan fail?</string>
     <string name="faq_scan_fail_answer">Check that the photo is sharp and well lit, and that your internet connection is on. Then try again.</string>
-
     <string name="faq_old_scans">Where are my old scans?</string>
     <string name="faq_old_scans_answer">Every scan is saved in the History tab. Tap one to see it again.</string>
-
     <string name="faq_delete_data">How do I delete my data?</string>
     <string name="faq_delete_data_answer">Go to Profile → Privacy &amp; security. You can clear your history or delete your account there.</string>
-
     <string name="email_support">Email support</string>
     <string name="report_problem">Report a problem</string>
 

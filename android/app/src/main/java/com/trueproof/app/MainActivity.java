@@ -1,3 +1,4 @@
+
 package com.trueproof.app;
 
 import android.content.Context;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -54,17 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
         supabaseAuth = new SupabaseAuth(this);
 
-        tvUserName =
-                findViewById(R.id.tvUserName);
-
-        imgProfileLogo =
-                findViewById(R.id.imgProfileLogo);
-
-        tvFraudAmount =
-                findViewById(R.id.tvFraudAmount);
-
-        tvFraudCount =
-                findViewById(R.id.tvFraudCount);
+        tvUserName = findViewById(R.id.tvUserName);
+        imgProfileLogo = findViewById(R.id.imgProfileLogo);
+        tvFraudAmount = findViewById(R.id.tvFraudAmount);
+        tvFraudCount = findViewById(R.id.tvFraudCount);
 
         recyclerRecentScans =
                 findViewById(R.id.recyclerRecentScans);
@@ -74,11 +69,8 @@ public class MainActivity extends AppCompatActivity {
         );
 
         loadUserProfile();
-
         setupQuickActions();
-
         setupBottomNavigation();
-
         loadRecentScans();
     }
 
@@ -99,11 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadUserProfile() {
 
-        String firstName =
-                supabaseAuth.getFirstName();
-
-        String lastName =
-                supabaseAuth.getLastName();
+        String firstName = supabaseAuth.getFirstName();
+        String lastName = supabaseAuth.getLastName();
 
         if (firstName == null) {
             firstName = "";
@@ -118,35 +107,19 @@ public class MainActivity extends AppCompatActivity {
 
         String fullName;
 
-        if (!firstName.isEmpty()
-                && !lastName.isEmpty()) {
-
-            fullName =
-                    firstName
-                            + " "
-                            + lastName;
-
+        if (!firstName.isEmpty() && !lastName.isEmpty()) {
+            fullName = firstName + " " + lastName;
         } else if (!firstName.isEmpty()) {
-
             fullName = firstName;
-
         } else if (!lastName.isEmpty()) {
-
             fullName = lastName;
-
         } else {
-
             fullName = "User";
         }
 
         tvUserName.setText(fullName);
 
-        // Load saved profile photo.
-        // If no photo exists, show initial letter.
-        loadProfilePhoto(
-                firstName,
-                fullName
-        );
+        loadProfilePhoto(firstName, fullName);
     }
 
     // =========================================================
@@ -165,19 +138,11 @@ public class MainActivity extends AppCompatActivity {
                 );
 
         String photoPath =
-                prefs.getString(
-                        PROFILE_PHOTO,
-                        ""
-                );
-
-        // -----------------------------------------------------
-        // CHECK SAVED PHOTO
-        // -----------------------------------------------------
+                prefs.getString(PROFILE_PHOTO, "");
 
         if (!photoPath.trim().isEmpty()) {
 
-            File photoFile =
-                    new File(photoPath);
+            File photoFile = new File(photoPath);
 
             if (photoFile.exists()) {
 
@@ -188,15 +153,10 @@ public class MainActivity extends AppCompatActivity {
 
                 if (bitmap != null) {
 
-                    // Create circular profile photo
                     Bitmap circularBitmap =
-                            createCircularBitmap(
-                                    bitmap
-                            );
+                            createCircularBitmap(bitmap);
 
-                    imgProfileLogo.setImageBitmap(
-                            circularBitmap
-                    );
+                    imgProfileLogo.setImageBitmap(circularBitmap);
 
                     imgProfileLogo.setBackgroundResource(
                             android.R.color.transparent
@@ -206,12 +166,7 @@ public class MainActivity extends AppCompatActivity {
                             ImageView.ScaleType.CENTER_CROP
                     );
 
-                    imgProfileLogo.setPadding(
-                            0,
-                            0,
-                            0,
-                            0
-                    );
+                    imgProfileLogo.setPadding(0, 0, 0, 0);
 
                     imgProfileLogo.setContentDescription(
                             "Profile photo"
@@ -222,33 +177,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // -----------------------------------------------------
-        // NO PHOTO → SHOW INITIAL
-        // -----------------------------------------------------
+        // NO PHOTO: SHOW INITIAL
 
         String initial = "U";
 
         if (firstName != null
                 && !firstName.trim().isEmpty()) {
 
-            initial =
-                    firstName
-                            .trim()
-                            .substring(0, 1)
-                            .toUpperCase(
-                                    Locale.ROOT
-                            );
+            initial = firstName.trim()
+                    .substring(0, 1)
+                    .toUpperCase(Locale.ROOT);
 
         } else if (fullName != null
                 && !fullName.trim().isEmpty()) {
 
-            initial =
-                    fullName
-                            .trim()
-                            .substring(0, 1)
-                            .toUpperCase(
-                                    Locale.ROOT
-                            );
+            initial = fullName.trim()
+                    .substring(0, 1)
+                    .toUpperCase(Locale.ROOT);
         }
 
         updateProfileLetter(initial);
@@ -258,57 +203,43 @@ public class MainActivity extends AppCompatActivity {
     // CREATE CIRCULAR BITMAP
     // =========================================================
 
-    private Bitmap createCircularBitmap(
-            Bitmap source
-    ) {
+    private Bitmap createCircularBitmap(Bitmap source) {
 
-        int size =
-                Math.min(
-                        source.getWidth(),
-                        source.getHeight()
-                );
+        int size = Math.min(
+                source.getWidth(),
+                source.getHeight()
+        );
 
-        int left =
-                (source.getWidth() - size) / 2;
+        int left = (source.getWidth() - size) / 2;
+        int top = (source.getHeight() - size) / 2;
 
-        int top =
-                (source.getHeight() - size) / 2;
+        Bitmap croppedBitmap = Bitmap.createBitmap(
+                source,
+                left,
+                top,
+                size,
+                size
+        );
 
-        Bitmap croppedBitmap =
-                Bitmap.createBitmap(
-                        source,
-                        left,
-                        top,
-                        size,
-                        size
-                );
+        Bitmap output = Bitmap.createBitmap(
+                size,
+                size,
+                Bitmap.Config.ARGB_8888
+        );
 
-        Bitmap output =
-                Bitmap.createBitmap(
-                        size,
-                        size,
-                        Bitmap.Config.ARGB_8888
-                );
+        Canvas canvas = new Canvas(output);
 
-        Canvas canvas =
-                new Canvas(output);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        Paint paint =
-                new Paint(
-                        Paint.ANTI_ALIAS_FLAG
-                );
-
-        BitmapShader shader =
-                new BitmapShader(
-                        croppedBitmap,
-                        Shader.TileMode.CLAMP,
-                        Shader.TileMode.CLAMP
-                );
+        BitmapShader shader = new BitmapShader(
+                croppedBitmap,
+                Shader.TileMode.CLAMP,
+                Shader.TileMode.CLAMP
+        );
 
         paint.setShader(shader);
 
-        float radius =
-                size / 2f;
+        float radius = size / 2f;
 
         canvas.drawCircle(
                 radius,
@@ -324,52 +255,35 @@ public class MainActivity extends AppCompatActivity {
     // PROFILE INITIAL
     // =========================================================
 
-    private void updateProfileLetter(
-            String initial
-    ) {
+    private void updateProfileLetter(String initial) {
 
-        Bitmap bitmap =
-                Bitmap.createBitmap(
-                        96,
-                        96,
-                        Bitmap.Config.ARGB_8888
-                );
+        Bitmap bitmap = Bitmap.createBitmap(
+                96,
+                96,
+                Bitmap.Config.ARGB_8888
+        );
 
-        Canvas canvas =
-                new Canvas(bitmap);
+        Canvas canvas = new Canvas(bitmap);
 
-        Paint paint =
-                new Paint(
-                        Paint.ANTI_ALIAS_FLAG
-                );
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         paint.setColor(
-                getResources().getColor(
-                        R.color.primary
-                )
+                getResources().getColor(R.color.primary)
         );
 
         paint.setTextSize(42);
 
-        paint.setTypeface(
-                Typeface.DEFAULT_BOLD
-        );
+        paint.setTypeface(Typeface.DEFAULT_BOLD);
 
-        paint.setTextAlign(
-                Paint.Align.CENTER
-        );
+        paint.setTextAlign(Paint.Align.CENTER);
 
-        Paint.FontMetrics metrics =
-                paint.getFontMetrics();
+        Paint.FontMetrics metrics = paint.getFontMetrics();
 
         float x = 48;
 
-        float y =
-                48
-                        - (
-                        metrics.ascent
-                                + metrics.descent
-                ) / 2;
+        float y = 48 - (
+                metrics.ascent + metrics.descent
+        ) / 2;
 
         canvas.drawText(
                 initial,
@@ -378,9 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 paint
         );
 
-        imgProfileLogo.setImageBitmap(
-                bitmap
-        );
+        imgProfileLogo.setImageBitmap(bitmap);
 
         imgProfileLogo.setBackgroundResource(
                 R.drawable.bg_profile_circle
@@ -390,12 +302,7 @@ public class MainActivity extends AppCompatActivity {
                 ImageView.ScaleType.CENTER
         );
 
-        imgProfileLogo.setPadding(
-                0,
-                0,
-                0,
-                0
-        );
+        imgProfileLogo.setPadding(0, 0, 0, 0);
 
         imgProfileLogo.setContentDescription(
                 "Profile " + initial
@@ -408,44 +315,33 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupQuickActions() {
 
-        // -----------------------------------------------------
         // SCAN SCREENSHOT
-        // -----------------------------------------------------
 
-        findViewById(
-                R.id.btnUploadScreenshot
-        ).setOnClickListener(v -> {
+        findViewById(R.id.btnUploadScreenshot)
+                .setOnClickListener(v -> {
 
-            Intent intent =
-                    new Intent(
+                    Intent intent = new Intent(
                             MainActivity.this,
                             ScanActivity.class
                     );
 
-            intent.putExtra(
-                    "mode",
-                    "gallery"
-            );
+                    intent.putExtra("mode", "gallery");
 
-            startActivity(intent);
-        });
+                    startActivity(intent);
+                });
 
-        // -----------------------------------------------------
         // VIEW HISTORY
-        // -----------------------------------------------------
 
-        findViewById(
-                R.id.btnOpenCamera
-        ).setOnClickListener(v -> {
+        findViewById(R.id.btnOpenCamera)
+                .setOnClickListener(v -> {
 
-            Intent intent =
-                    new Intent(
+                    Intent intent = new Intent(
                             MainActivity.this,
                             HistoryActivity.class
                     );
 
-            startActivity(intent);
-        });
+                    startActivity(intent);
+                });
     }
 
     // =========================================================
@@ -455,18 +351,13 @@ public class MainActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
 
         BottomNavigationView nav =
-                findViewById(
-                        R.id.bottomNav
-                );
+                findViewById(R.id.bottomNav);
 
-        nav.setSelectedItemId(
-                R.id.nav_home
-        );
+        nav.setSelectedItemId(R.id.nav_home);
 
         nav.setOnItemSelectedListener(item -> {
 
-            int id =
-                    item.getItemId();
+            int id = item.getItemId();
 
             if (id == R.id.nav_home) {
 
@@ -511,101 +402,114 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // =========================================================
-    // LOAD RECENT SCANS
+    // LOAD RECENT SCANS FOR CURRENT USER
     // =========================================================
 
     private void loadRecentScans() {
 
-        DatabaseHelper db =
-                new DatabaseHelper(this);
+        DatabaseHelper db = new DatabaseHelper(this);
 
-        List<HistoryItem> allScans =
-                db.getAllScans();
+        List<HistoryItem> userScans = new ArrayList<>();
 
-        updateFraudSummary(allScans);
+        try {
 
-        List<HistoryItem> recentScans =
-                allScans;
+            String userId = supabaseAuth.getUserId();
 
-        // Show latest 4 scans only.
-        if (recentScans.size() > 4) {
+            if (userId != null && !userId.trim().isEmpty()) {
 
-            recentScans =
-                    recentScans.subList(
-                            0,
-                            4
-                    );
-        }
+                // IMPORTANT:
+                // Fetch scans belonging to the logged-in account only.
+                userScans = db.getScansForUser(userId);
 
-        HistoryAdapter adapter =
-                new HistoryAdapter(
-                        recentScans,
-                        item -> {
+                if (userScans == null) {
+                    userScans = new ArrayList<>();
+                }
 
-                            Intent intent =
-                                    new Intent(
-                                            MainActivity.this,
-                                            ResultActivity.class
-                                    );
+            } else {
 
-                            intent.putExtra(
-                                    "scan_id",
-                                    item.scanId
-                            );
+                // No logged-in user: do not show another account's scans.
+                userScans = new ArrayList<>();
+            }
 
-                            intent.putExtra(
-                                    "verdict",
-                                    item.verdict
-                            );
+            updateFraudSummary(userScans);
 
-                            intent.putExtra(
-                                    "confidence",
-                                    item.confidence
-                            );
+            // Show latest 4 scans only.
+            List<HistoryItem> recentScans =
+                    new ArrayList<>(userScans);
 
-                            intent.putExtra(
-                                    "image_path",
-                                    item.imagePath
-                            );
-
-                            intent.putExtra(
-                                    "reasons",
-                                    "On-device AI image analysis"
-                            );
-
-                            startActivity(intent);
-                        }
+            if (recentScans.size() > 4) {
+                recentScans = new ArrayList<>(
+                        recentScans.subList(0, 4)
                 );
+            }
 
-        recyclerRecentScans.setAdapter(
-                adapter
-        );
+            HistoryAdapter adapter = new HistoryAdapter(
+                    recentScans,
+                    item -> {
+
+                        Intent intent = new Intent(
+                                MainActivity.this,
+                                ResultActivity.class
+                        );
+
+                        intent.putExtra("scan_id", item.scanId);
+                        intent.putExtra("verdict", item.verdict);
+                        intent.putExtra("confidence", item.confidence);
+                        intent.putExtra("image_path", item.imagePath);
+
+                        intent.putExtra(
+                                "reasons",
+                                "On-device AI image analysis"
+                        );
+
+                        if (item.amount != null) {
+                            intent.putExtra("amount", item.amount);
+                        }
+
+                        startActivity(intent);
+                    }
+            );
+
+            recyclerRecentScans.setAdapter(adapter);
+
+        } catch (Exception e) {
+
+            android.util.Log.e(
+                    "TRUESHOT_HOME",
+                    "Could not load current user's scans",
+                    e
+            );
+
+            updateFraudSummary(new ArrayList<>());
+
+            recyclerRecentScans.setAdapter(
+                    new HistoryAdapter(
+                            new ArrayList<>(),
+                            item -> {
+                                // No scan item to open.
+                            }
+                    )
+            );
+
+        } finally {
+            db.close();
+        }
     }
 
     // =========================================================
     // FRAUD SUMMARY
     // =========================================================
 
-    private void updateFraudSummary(
-            List<HistoryItem> scans
-    ) {
+    private void updateFraudSummary(List<HistoryItem> scans) {
 
         double fraudAmount = 0.0;
 
         int fraudCount = 0;
 
-        Calendar now =
-                Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
 
-        int currentMonth =
-                now.get(
-                        Calendar.MONTH
-                );
-
-        int currentYear =
-                now.get(
-                        Calendar.YEAR
-                );
+        int currentMonth = now.get(Calendar.MONTH);
+        int currentYear = now.get(Calendar.YEAR);
 
         for (HistoryItem item : scans) {
 
@@ -613,19 +517,15 @@ public class MainActivity extends AppCompatActivity {
                 continue;
             }
 
-            // -------------------------------------------------
             // CHECK VERDICT
-            // -------------------------------------------------
 
-            String verdict =
-                    item.verdict;
+            String verdict = item.verdict;
 
             if (verdict == null) {
                 continue;
             }
 
-            verdict =
-                    verdict.trim();
+            verdict = verdict.trim();
 
             boolean isFraud =
                     verdict.equalsIgnoreCase("FAKE")
@@ -635,108 +535,72 @@ public class MainActivity extends AppCompatActivity {
                 continue;
             }
 
-            // -------------------------------------------------
             // CHECK SCAN DATE
-            // -------------------------------------------------
 
-            Calendar scanDate =
-                    Calendar.getInstance();
+            Calendar scanDate = Calendar.getInstance();
 
-            scanDate.setTimeInMillis(
-                    item.timestamp
-            );
+            scanDate.setTimeInMillis(item.timestamp);
 
-            int scanMonth =
-                    scanDate.get(
-                            Calendar.MONTH
-                    );
-
-            int scanYear =
-                    scanDate.get(
-                            Calendar.YEAR
-                    );
+            int scanMonth = scanDate.get(Calendar.MONTH);
+            int scanYear = scanDate.get(Calendar.YEAR);
 
             // Only current month.
+
             if (scanMonth != currentMonth
                     || scanYear != currentYear) {
-
                 continue;
             }
 
-            // -------------------------------------------------
             // FLAGGED COUNT
-            // -------------------------------------------------
 
             fraudCount++;
 
-            // -------------------------------------------------
             // AMOUNT
-            // -------------------------------------------------
 
             if (item.amount == null) {
                 continue;
             }
 
-            String amountText =
-                    item.amount.trim();
+            String amountText = item.amount.trim();
 
             if (amountText.isEmpty()) {
                 continue;
             }
 
-            // Remove common currency symbols
-            // and formatting.
-            amountText =
-                    amountText
-                            .replace("₹", "")
-                            .replace("Rs.", "")
-                            .replace("Rs", "")
-                            .replace(",", "")
-                            .trim();
+            amountText = amountText
+                    .replace("₹", "")
+                    .replace("Rs.", "")
+                    .replace("Rs", "")
+                    .replace("INR", "")
+                    .replace(",", "")
+                    .trim();
 
-            // Ignore values such as:
-            // "unknown"
-            // "amount unknown"
             if (amountText.equalsIgnoreCase("unknown")
-                    || amountText.equalsIgnoreCase(
-                    "amount unknown"
-            )) {
-
+                    || amountText.equalsIgnoreCase("amount unknown")) {
                 continue;
             }
 
             try {
 
-                double amount =
-                        Double.parseDouble(
-                                amountText
-                        );
+                double amount = Double.parseDouble(amountText);
 
                 if (amount >= 0) {
-
                     fraudAmount += amount;
                 }
 
             } catch (NumberFormatException ignored) {
-
-                // Invalid amount is ignored.
+                // Ignore invalid amounts.
             }
         }
 
-        // -----------------------------------------------------
         // UPDATE UI
-        // -----------------------------------------------------
 
         tvFraudAmount.setText(
-                formatAmount(
-                        fraudAmount
-                )
+                formatAmount(fraudAmount)
         );
 
         tvFraudCount.setText(
-                "Across "
-                        + fraudCount
-                        + " flagged screenshots"
+                "Across " + fraudCount + " flagged screenshots"
         );
     }
 
@@ -744,9 +608,7 @@ public class MainActivity extends AppCompatActivity {
     // FORMAT AMOUNT
     // =========================================================
 
-    private String formatAmount(
-            double amount
-    ) {
+    private String formatAmount(double amount) {
 
         if (amount == Math.floor(amount)) {
 
